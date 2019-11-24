@@ -149,11 +149,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  shopRepairColor: {r: 0, g: 0.34998178, b: 1, a: 1}
+  shopFrequency: 50
+  energyColor: {r: 1, g: 0.85015744, b: 0.02352941, a: 1}
+  energyFrequency: 7
+  fuelColor: {r: 1, g: 0.56976867, b: 0, a: 1}
+  fuelFrequency: 11
+  systemCount: 1000
+  galaxyRadius: 100
   objectToSpawn: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   systems: []
-  systemCount: 1000
-  galaxyRadius: 100
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0
@@ -204,7 +211,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

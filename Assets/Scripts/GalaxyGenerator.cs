@@ -1,18 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GalaxyGenerator : MonoBehaviour
 {
+    //Node Colours
+    [Space(20)]
     [SerializeField]
-    GameObject objectToSpawn = null;
-    [SerializeField]
-    GameObject[] systems;
+    Color defaultColor;
 
+    [Space(10)]
+    [SerializeField]
+    Color shopRepairColor;
+    [SerializeField]
+    int shopFrequency;
+
+    [Space(10)]
+    [SerializeField]
+    Color fuelColor;
+    [SerializeField]
+    int fuelFrequency;
+
+    [Space(10)]
+    [SerializeField]
+    Color energyColor;
+    [SerializeField]
+    int energyFrequency;
+
+    //Galaxy spawning settings
+    [Space(20)]
     [SerializeField]
     int systemCount = 1000;
     [SerializeField]
     float galaxyRadius = 100.0f;
+    [SerializeField]
+    GameObject objectToSpawn = null;
+    [SerializeField]
+    GameObject[] systems;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +51,7 @@ public class GalaxyGenerator : MonoBehaviour
 
     void SpawnGalaxy(int systemCount, float galaxyRadius)
     {
+        //Positioning
         int currentCount = 0;
         while(currentCount < systemCount)
         {
@@ -49,7 +72,32 @@ public class GalaxyGenerator : MonoBehaviour
             {
                 Destroy(system);
             }
-            
+
+            //Node types
+            GalaxyNode node = system.GetComponent<GalaxyNode>();
+            if (currentCount % shopFrequency == 0)
+            {
+                node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
+                node.SetColor(shopRepairColor);
+                node.name = "Node " + currentCount + " (Shop / Repair)";
+            }
+            else if (currentCount % fuelFrequency == 0)
+            {
+                node.SetNodeType(GalaxyNode.NodeType.Fuel);
+                node.SetColor(fuelColor);
+                node.name = "Node " + currentCount + " (Fuel)";
+            } else if (currentCount % energyFrequency == 0)
+            {
+                node.SetNodeType(GalaxyNode.NodeType.Energy);
+                node.SetColor(energyColor);
+                node.name = "Node " + currentCount + " (Energy)";
+            }
+            else
+            {
+                node.SetNodeType(GalaxyNode.NodeType.None);
+                node.SetColor(defaultColor);
+                node.name = "Node " + currentCount + " (Default)";
+            }
         }
     }
 
