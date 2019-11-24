@@ -103,7 +103,7 @@ public class GalaxyGenerator : MonoBehaviour
 
     bool CheckValidSystem(GameObject system)
     {
-        Vector3 location = system.transform.position;
+        Vector2 location = system.transform.position;
         for (int i = 0; i < systems.Length; i++)
         {
             if (systems[i] != null)
