@@ -146,9 +146,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6192555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfed77f5763d6f144aa646d222589456, type: 3}
+  m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectToSpawn: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
+    type: 3}
+  systems: []
+  systemCount: 1000
+  galaxyRadius: 100
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0
@@ -216,7 +221,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 100
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
