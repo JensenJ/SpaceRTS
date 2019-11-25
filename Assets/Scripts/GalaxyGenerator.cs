@@ -25,22 +25,36 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int energyFrequency;
 
-    //Galaxy spawning settings
+    private float segments = 0;
+
+    [Header("Galaxy Generation Settings: ")]
     [Space(20)]
     [SerializeField]
-    int systemCount = 1000;
+    [Range(1.0f, 10.0f)]
+    float systemDensity = 0.6f;
     [SerializeField]
-    float galaxyRadius = 100.0f;
+    [Range(50.0f, 200.0f)]
+    float systemRadius = 100.0f;
     [SerializeField]
-    GameObject objectToSpawn = null;
+    [Range(0, 20)]
+    int systemRingCount = 8;
+    [SerializeField]
+    [Range(0.01f, 1.0f)]
+    float systemRingWidth = 0.1f;
+
+    [Space(20)]
+    [SerializeField]
+    GameObject systemPrefab = null;
+    [SerializeField]
+    GameObject ringPrefab = null;
+
     [SerializeField]
     GameObject[] systems;
 
     // Start is called before the first frame update
     void Start()
     {
-        systems = new GameObject[systemCount];
-        SpawnGalaxy(systemCount, galaxyRadius);
+        SpawnGalaxy();
     }
 
     // Update is called once per frame
@@ -49,57 +63,150 @@ public class GalaxyGenerator : MonoBehaviour
         
     }
 
-    void SpawnGalaxy(int systemCount, float galaxyRadius)
+    void SpawnGalaxy()
     {
-        //Positioning
-        int currentCount = 0;
-        while(currentCount < systemCount)
+        int totalSystemCount = 0;
+        //For each system ring
+        for (int i = 0; i < systemRingCount; i++)
         {
-            float a = Random.Range(0.0f, 1.0f) * 2 * 3.14f;
-            float r = galaxyRadius * Mathf.Sqrt(Random.Range(0.025f, 1.0f));
+            //Calculate segment size and ring radius
+            float segmentSize = systemRadius / systemRingCount;
+            float ringRadius = segmentSize * (i + 1);
 
-            Vector2 position = new Vector2(r * Mathf.Cos(a), r * Mathf.Sin(a));
+            //Calculate ring radius min/max
+            float minRingRadius = ringRadius - systemRingWidth;
+            float maxRingRadius = ringRadius + systemRingWidth;
 
-            GameObject system = Instantiate(objectToSpawn, position, Quaternion.identity, transform);
+            //Calculate ring area
+            float upperArea = maxRingRadius * maxRingRadius * 3.14f;
+            float lowerArea = minRingRadius * minRingRadius * 3.14f;
+            float ringArea = upperArea - lowerArea;
 
-            bool valid = CheckValidSystem(system);
-            if (valid)
+            //Calculate number of systems for each ring using formula: mass (number of systems) = density * volume (area).
+            int numberOfSystemsForRing = Mathf.FloorToInt(systemDensity * ringArea);
+
+            //Instantiate ring object for ring image, give gameobject ring name
+            GameObject galaxyRing = Instantiate(ringPrefab, new Vector2(0, 0), Quaternion.identity, transform);
+            galaxyRing.name = "GalaxyRing " + (i + 1);
+
+            //For each system in a ring
+            for (int j = 0; j < numberOfSystemsForRing; j++)
             {
-                systems[currentCount] = system;
-                currentCount++;
-            }
-            else
-            {
-                Destroy(system);
-            }
+                //Generate position
+                float a = Random.Range(0.0f, 1.0f) * 2 * 3.14f;
+                float r = systemRadius * Mathf.Sqrt(Random.Range(minRingRadius, maxRingRadius));
+                Vector2 position = new Vector2(r * Mathf.Cos(a) / 10.0f, r * Mathf.Sin(a) / 10.0f);
 
-            //Node types
-            GalaxyNode node = system.GetComponent<GalaxyNode>();
-            if (currentCount % shopFrequency == 0)
+                //GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform.GetChild(i + 1));
+                //Instantiate system object
+                GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform);
+                system.name = "System: " + totalSystemCount;
+                totalSystemCount++;
+            }
+        }
+
+        systems = GameObject.FindGameObjectsWithTag("GalaxySystem");
+        for (int i = 0; i < systems.Length; i++)
+        {
+            //bool valid = CheckValidSystem(systems[i]);
+            //if(valid == false)
+            //{
+            //    Destroy(systems[i]);
+            //}
+
+
+            //TODO: Calculate frequency of objects correctly, treat frequency as percentage. e.g. 17% of all nodes are energy resource. 
+            //Calculate 17% of how many nodes there are, then iterate over systems array this many times and set nodes to that type.
+
+            GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
+            if (i % shopFrequency == 0)
             {
                 node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
                 node.SetColor(shopRepairColor);
-                node.name = "Node " + currentCount + " (Shop / Repair)";
+                node.name = "Node " + i + " (Shop / Repair)";
             }
-            else if (currentCount % fuelFrequency == 0)
+            else if (i % fuelFrequency == 0)
             {
                 node.SetNodeType(GalaxyNode.NodeType.Fuel);
                 node.SetColor(fuelColor);
-                node.name = "Node " + currentCount + " (Fuel)";
-            } else if (currentCount % energyFrequency == 0)
+                node.name = "Node " + i + " (Fuel)";
+            }
+            else if (i % energyFrequency == 0)
             {
                 node.SetNodeType(GalaxyNode.NodeType.Energy);
                 node.SetColor(energyColor);
-                node.name = "Node " + currentCount + " (Energy)";
+                node.name = "Node " + i + " (Energy)";
             }
             else
             {
                 node.SetNodeType(GalaxyNode.NodeType.None);
                 node.SetColor(defaultColor);
-                node.name = "Node " + currentCount + " (Default)";
+                node.name = "Node " + i + " (Default)";
             }
         }
     }
+
+    //void SpawnGalaxy(int systemCount, float galaxyRadius)
+    //{
+    //    //Positioning
+    //    int currentCount = 0;
+    //    while(currentCount < systemCount)
+    //    {
+    //        for (int i = 0; i < numberOfRings; i++)
+    //        {
+    //            float b = segments * (i + 1);
+    //            float c = b - (widthOfRings / 100);
+    //            float d = b + (widthOfRings / 100);
+    //            print(c);
+    //            print(d);
+
+    //            float a = Random.Range(0.0f, 1.0f) * 2 * 3.14f;
+    //            float r = galaxyRadius * Mathf.Sqrt(Random.Range(c, d));
+    //            Vector2 position = new Vector2((r * Mathf.Cos(a)) / 10.0f, (r * Mathf.Sin(a)) / 10.0f);
+
+    //            GameObject system = Instantiate(objectToSpawn, position, Quaternion.identity, transform);
+
+    //            //bool valid = CheckValidSystem(system);
+    //            bool valid = true;
+    //            if (valid)
+    //            {
+    //                systems[currentCount] = system;
+    //                currentCount++;
+    //            }
+    //            else
+    //            {
+    //                Destroy(system);
+    //            }
+
+    //            //Node types
+    //            GalaxyNode node = system.GetComponent<GalaxyNode>();
+    //            if (currentCount % shopFrequency == 0)
+    //            {
+    //                node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
+    //                node.SetColor(shopRepairColor);
+    //                node.name = "Node " + currentCount + " (Shop / Repair)";
+    //            }
+    //            else if (currentCount % fuelFrequency == 0)
+    //            {
+    //                node.SetNodeType(GalaxyNode.NodeType.Fuel);
+    //                node.SetColor(fuelColor);
+    //                node.name = "Node " + currentCount + " (Fuel)";
+    //            }
+    //            else if (currentCount % energyFrequency == 0)
+    //            {
+    //                node.SetNodeType(GalaxyNode.NodeType.Energy);
+    //                node.SetColor(energyColor);
+    //                node.name = "Node " + currentCount + " (Energy)";
+    //            }
+    //            else
+    //            {
+    //                node.SetNodeType(GalaxyNode.NodeType.None);
+    //                node.SetColor(defaultColor);
+    //                node.name = "Node " + currentCount + " (Default)";
+    //            }
+    //        }
+    //    }
+    //}
 
     bool CheckValidSystem(GameObject system)
     {

@@ -156,9 +156,13 @@ MonoBehaviour:
   fuelFrequency: 11
   energyColor: {r: 1, g: 0.85015744, b: 0.02352941, a: 1}
   energyFrequency: 7
-  systemCount: 1000
-  galaxyRadius: 100
-  objectToSpawn: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
+  systemDensity: 1
+  systemRadius: 150
+  systemRingCount: 20
+  systemRingWidth: 0.071
+  systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
+    type: 3}
+  ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
     type: 3}
   systems: []
 --- !u!4 &6192557
