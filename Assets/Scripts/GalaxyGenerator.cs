@@ -6,42 +6,45 @@ public class GalaxyGenerator : MonoBehaviour
     //Node Colours
     [Space(20)]
     [SerializeField]
-    Color defaultColor;
+    Color defaultColor = Color.black;
 
     [Space(10)]
     [SerializeField]
-    Color shopRepairColor;
+    Color shopRepairColor = Color.black;
     [SerializeField]
-    int shopFrequency;
+    int shopFrequency = 5;
 
     [Space(10)]
     [SerializeField]
-    Color fuelColor;
+    Color fuelColor = Color.black;
     [SerializeField]
-    int fuelFrequency;
+    int fuelFrequency = 20;
 
     [Space(10)]
     [SerializeField]
-    Color energyColor;
+    Color energyColor = Color.black;
     [SerializeField]
-    int energyFrequency;
-
-    private float segments = 0;
+    int energyFrequency = 30;
 
     [Header("Galaxy Generation Settings: ")]
     [Space(20)]
     [SerializeField]
-    [Range(1.0f, 10.0f)]
+    [Range(1.0f, 4.0f)]
     float systemDensity = 0.6f;
     [SerializeField]
-    [Range(50.0f, 200.0f)]
+    [Range(50.0f, 250.0f)]
     float systemRadius = 100.0f;
     [SerializeField]
-    [Range(0, 20)]
+    [Range(0.0f, 50.0f)]
+    float systemCenterRadius = 25.0f;
+    [SerializeField]
+    [Range(0, 10)]
     int systemRingCount = 8;
     [SerializeField]
     [Range(0.01f, 10.0f)]
     float systemCollisionDistance = 1.5f;
+    [SerializeField]
+    bool systemEquidistant = true;
 
     private float systemRingWidth = 0.1f;
 
@@ -72,7 +75,8 @@ public class GalaxyGenerator : MonoBehaviour
         for (int i = 0; i < systemRingCount; i++)
         {
             //Calculate segment size and ring radius
-            float segmentSize = systemRadius / systemRingCount;
+            
+            float segmentSize = (systemRadius - systemCenterRadius) / systemRingCount;
             float ringRadius = segmentSize * (i + 1);
 
             //Calculate ring radius min/max
@@ -80,8 +84,8 @@ public class GalaxyGenerator : MonoBehaviour
             float maxRingRadius = ringRadius + systemRingWidth;
 
             //Calculate ring area
-            float upperArea = maxRingRadius * maxRingRadius * 3.14f;
-            float lowerArea = minRingRadius * minRingRadius * 3.14f;
+            float upperArea = maxRingRadius * maxRingRadius * Mathf.PI;
+            float lowerArea = minRingRadius * minRingRadius * Mathf.PI;
             float ringArea = upperArea - lowerArea;
 
             //Calculate number of systems for each ring using formula: mass (number of systems) = density * volume (area).
@@ -92,27 +96,48 @@ public class GalaxyGenerator : MonoBehaviour
             galaxyRing.name = "GalaxyRing " + (i + 1);
 
             //For each system in a ring
+            //for (int j = 0; j < numberOfSystemsForRing; j++)
+            //{
+            //    //Generate position
+            //    float a = Random.Range(0.0f, 1.0f) * 2 * Mathf.PI;
+            //    float r = systemRadius * Mathf.Sqrt(Random.Range(minRingRadius, maxRingRadius));
+            //    Vector2 position = new Vector2(r * Mathf.Cos(a) / 10.0f, r * Mathf.Sin(a) / 10.0f);
+
+            //    //GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform.GetChild(i + 1));
+            //    //Instantiate system object
+            //    Instantiate(systemPrefab, position, Quaternion.identity, transform);
+            //}
+
             for (int j = 0; j < numberOfSystemsForRing; j++)
             {
-                //Generate position
-                float a = Random.Range(0.0f, 1.0f) * 2 * 3.14f;
-                float r = systemRadius * Mathf.Sqrt(Random.Range(minRingRadius, maxRingRadius));
-                Vector2 position = new Vector2(r * Mathf.Cos(a) / 10.0f, r * Mathf.Sin(a) / 10.0f);
-
-                //GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform.GetChild(i + 1));
-                //Instantiate system object
-                Instantiate(systemPrefab, position, Quaternion.identity, transform);
+                float angle;
+                if (systemEquidistant)
+                {
+                    //Spawn systems that have an equal distance from each other.
+                    angle = j * Mathf.PI * 2f / numberOfSystemsForRing;
+                }
+                else
+                {
+                    //Spawn systems randomly
+                    angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
+                }
+                //Calculate position
+                Vector2 newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius), Mathf.Sin(angle) * (ringRadius + systemCenterRadius));
+                Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
             }
         }
+        //Get all current systems within scene
         systems = GetAllGalaxySystems();
 
+        //Remove colliding systems (check if they are valid)
         for (int i = 0; i < systems.Length; i++)
         {
             CheckValidSystem(systems[i]);
         }
-
+        //Get all current systems within scene after some have been removed
         systems = GetAllGalaxySystems();
 
+        //For every system.
         for (int i = 0; i < systems.Length; i++)
         {
             //TODO: Calculate frequency of objects correctly, treat frequency as percentage. e.g. 17% of all nodes are energy resource. 
@@ -145,10 +170,6 @@ public class GalaxyGenerator : MonoBehaviour
                     node.name = "Node " + i + " (Default)";
                 }
             }
-            else
-            {
-                print("error");
-            }
         }
     }
 
@@ -179,6 +200,7 @@ public class GalaxyGenerator : MonoBehaviour
         }
     }
 
+    //Return an array of gameobjects that are all tagged with "GalaxySystem"
     GameObject[] GetAllGalaxySystems()
     {
         return GameObject.FindGameObjectsWithTag("GalaxySystem");
