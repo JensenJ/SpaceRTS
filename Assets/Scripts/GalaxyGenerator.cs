@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 
 public class GalaxyGenerator : MonoBehaviour
 {
@@ -39,8 +40,10 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0, 20)]
     int systemRingCount = 8;
     [SerializeField]
-    [Range(0.01f, 1.0f)]
-    float systemRingWidth = 0.1f;
+    [Range(0.01f, 10.0f)]
+    float systemCollisionDistance = 1.5f;
+
+    private float systemRingWidth = 0.1f;
 
     [Space(20)]
     [SerializeField]
@@ -65,7 +68,6 @@ public class GalaxyGenerator : MonoBehaviour
 
     void SpawnGalaxy()
     {
-        int totalSystemCount = 0;
         //For each system ring
         for (int i = 0; i < systemRingCount; i++)
         {
@@ -99,130 +101,86 @@ public class GalaxyGenerator : MonoBehaviour
 
                 //GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform.GetChild(i + 1));
                 //Instantiate system object
-                GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform);
-                system.name = "System: " + totalSystemCount;
-                totalSystemCount++;
+                Instantiate(systemPrefab, position, Quaternion.identity, transform);
             }
         }
+        systems = GetAllGalaxySystems();
 
-        systems = GameObject.FindGameObjectsWithTag("GalaxySystem");
         for (int i = 0; i < systems.Length; i++)
         {
-            //bool valid = CheckValidSystem(systems[i]);
-            //if(valid == false)
-            //{
-            //    Destroy(systems[i]);
-            //}
+            CheckValidSystem(systems[i]);
+        }
 
+        systems = GetAllGalaxySystems();
 
+        for (int i = 0; i < systems.Length; i++)
+        {
             //TODO: Calculate frequency of objects correctly, treat frequency as percentage. e.g. 17% of all nodes are energy resource. 
             //Calculate 17% of how many nodes there are, then iterate over systems array this many times and set nodes to that type.
-
-            GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
-            if (i % shopFrequency == 0)
+            if (systems[i] != null)
             {
-                node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
-                node.SetColor(shopRepairColor);
-                node.name = "Node " + i + " (Shop / Repair)";
-            }
-            else if (i % fuelFrequency == 0)
-            {
-                node.SetNodeType(GalaxyNode.NodeType.Fuel);
-                node.SetColor(fuelColor);
-                node.name = "Node " + i + " (Fuel)";
-            }
-            else if (i % energyFrequency == 0)
-            {
-                node.SetNodeType(GalaxyNode.NodeType.Energy);
-                node.SetColor(energyColor);
-                node.name = "Node " + i + " (Energy)";
+                GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
+                if (i % shopFrequency == 0)
+                {
+                    node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
+                    node.SetColor(shopRepairColor);
+                    node.name = "Node " + i + " (Shop / Repair)";
+                }
+                else if (i % fuelFrequency == 0)
+                {
+                    node.SetNodeType(GalaxyNode.NodeType.Fuel);
+                    node.SetColor(fuelColor);
+                    node.name = "Node " + i + " (Fuel)";
+                }
+                else if (i % energyFrequency == 0)
+                {
+                    node.SetNodeType(GalaxyNode.NodeType.Energy);
+                    node.SetColor(energyColor);
+                    node.name = "Node " + i + " (Energy)";
+                }
+                else
+                {
+                    node.SetNodeType(GalaxyNode.NodeType.None);
+                    node.SetColor(defaultColor);
+                    node.name = "Node " + i + " (Default)";
+                }
             }
             else
             {
-                node.SetNodeType(GalaxyNode.NodeType.None);
-                node.SetColor(defaultColor);
-                node.name = "Node " + i + " (Default)";
+                print("error");
             }
         }
     }
 
-    //void SpawnGalaxy(int systemCount, float galaxyRadius)
-    //{
-    //    //Positioning
-    //    int currentCount = 0;
-    //    while(currentCount < systemCount)
-    //    {
-    //        for (int i = 0; i < numberOfRings; i++)
-    //        {
-    //            float b = segments * (i + 1);
-    //            float c = b - (widthOfRings / 100);
-    //            float d = b + (widthOfRings / 100);
-    //            print(c);
-    //            print(d);
-
-    //            float a = Random.Range(0.0f, 1.0f) * 2 * 3.14f;
-    //            float r = galaxyRadius * Mathf.Sqrt(Random.Range(c, d));
-    //            Vector2 position = new Vector2((r * Mathf.Cos(a)) / 10.0f, (r * Mathf.Sin(a)) / 10.0f);
-
-    //            GameObject system = Instantiate(objectToSpawn, position, Quaternion.identity, transform);
-
-    //            //bool valid = CheckValidSystem(system);
-    //            bool valid = true;
-    //            if (valid)
-    //            {
-    //                systems[currentCount] = system;
-    //                currentCount++;
-    //            }
-    //            else
-    //            {
-    //                Destroy(system);
-    //            }
-
-    //            //Node types
-    //            GalaxyNode node = system.GetComponent<GalaxyNode>();
-    //            if (currentCount % shopFrequency == 0)
-    //            {
-    //                node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
-    //                node.SetColor(shopRepairColor);
-    //                node.name = "Node " + currentCount + " (Shop / Repair)";
-    //            }
-    //            else if (currentCount % fuelFrequency == 0)
-    //            {
-    //                node.SetNodeType(GalaxyNode.NodeType.Fuel);
-    //                node.SetColor(fuelColor);
-    //                node.name = "Node " + currentCount + " (Fuel)";
-    //            }
-    //            else if (currentCount % energyFrequency == 0)
-    //            {
-    //                node.SetNodeType(GalaxyNode.NodeType.Energy);
-    //                node.SetColor(energyColor);
-    //                node.name = "Node " + currentCount + " (Energy)";
-    //            }
-    //            else
-    //            {
-    //                node.SetNodeType(GalaxyNode.NodeType.None);
-    //                node.SetColor(defaultColor);
-    //                node.name = "Node " + currentCount + " (Default)";
-    //            }
-    //        }
-    //    }
-    //}
-
-    bool CheckValidSystem(GameObject system)
+    void CheckValidSystem(GameObject system)
     {
+        //Get location of current system
         Vector2 location = system.transform.position;
+        //For each system in galaxy
         for (int i = 0; i < systems.Length; i++)
         {
-            if (systems[i] != null)
+            //Check its not null
+            if (systems[i] != null) 
             {
-                Vector2 currentNodePosition = systems[i].transform.position;
-                float distance = Vector2.Distance(currentNodePosition, location);
-                if (distance <= 1.5f)
+                //If current system is equal to iteration system, then skip it
+                if(systems[i] == system)
                 {
-                    return false;
+                    continue;
+                }
+                //Calculate distance
+                Vector2 currentNodePosition = systems[i].transform.position;
+                float distance = Vector2.Distance(location, currentNodePosition);
+                //Destroy object if closer than collisionDistance
+                if (distance <= systemCollisionDistance)
+                {
+                    DestroyImmediate(system);
                 }
             }
         }
-        return true;
+    }
+
+    GameObject[] GetAllGalaxySystems()
+    {
+        return GameObject.FindGameObjectsWithTag("GalaxySystem");
     }
 }
