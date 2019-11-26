@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Linq;
+
 
 public class GalaxyGenerator : MonoBehaviour
 {
     //Node Colours
+    [Header("System Resource Generation Settings: ")]
     [Space(20)]
     [SerializeField]
     Color defaultColor = Color.black;
@@ -26,10 +27,11 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int energyFrequency = 30;
 
-    [Header("Galaxy Generation Settings: ")]
+    //Inspector settings for galaxy generation
+    [Header("System Position Generation Settings: ")]
     [Space(20)]
     [SerializeField]
-    [Range(1.0f, 4.0f)]
+    [Range(0.1f, 3.0f)]
     float systemDensity = 0.6f;
     [SerializeField]
     [Range(50.0f, 250.0f)]
@@ -44,9 +46,14 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0.01f, 10.0f)]
     float systemCollisionDistance = 1.5f;
     [SerializeField]
-    bool systemEquidistant = true;
+    bool systemCollisions = true;
 
-    private float systemRingWidth = 0.1f;
+    [Space(10)]
+    [SerializeField]
+    bool systemEquidistant = true;
+    [SerializeField]
+    [Range(0.01f, 0.5f)]
+    float systemRingWidth = 1.0f;
 
     [Space(20)]
     [SerializeField]
@@ -95,52 +102,44 @@ public class GalaxyGenerator : MonoBehaviour
             GameObject galaxyRing = Instantiate(ringPrefab, new Vector2(0, 0), Quaternion.identity, transform);
             galaxyRing.name = "GalaxyRing " + (i + 1);
 
-            //For each system in a ring
-            //for (int j = 0; j < numberOfSystemsForRing; j++)
-            //{
-            //    //Generate position
-            //    float a = Random.Range(0.0f, 1.0f) * 2 * Mathf.PI;
-            //    float r = systemRadius * Mathf.Sqrt(Random.Range(minRingRadius, maxRingRadius));
-            //    Vector2 position = new Vector2(r * Mathf.Cos(a) / 10.0f, r * Mathf.Sin(a) / 10.0f);
-
-            //    //GameObject system = Instantiate(systemPrefab, position, Quaternion.identity, transform.GetChild(i + 1));
-            //    //Instantiate system object
-            //    Instantiate(systemPrefab, position, Quaternion.identity, transform);
-            //}
-
             for (int j = 0; j < numberOfSystemsForRing; j++)
             {
-                float angle;
+                Vector2 newPos;
                 if (systemEquidistant)
                 {
                     //Spawn systems that have an equal distance from each other.
-                    angle = j * Mathf.PI * 2f / numberOfSystemsForRing;
+                    float angle = j * Mathf.PI * 2f / numberOfSystemsForRing;
+                    newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius), Mathf.Sin(angle) * (ringRadius + systemCenterRadius));
                 }
                 else
                 {
                     //Spawn systems randomly
-                    angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
+                    float angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
+                    newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingCount, systemRingWidth), 
+                        Mathf.Sin(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingWidth, systemRingWidth));
                 }
                 //Calculate position
-                Vector2 newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius), Mathf.Sin(angle) * (ringRadius + systemCenterRadius));
                 Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
             }
         }
         //Get all current systems within scene
         systems = GetAllGalaxySystems();
 
-        //Remove colliding systems (check if they are valid)
-        for (int i = 0; i < systems.Length; i++)
+        if (systemCollisions == true)
         {
-            CheckValidSystem(systems[i]);
+            //Remove colliding systems (check if they are valid)
+            for (int i = 0; i < systems.Length; i++)
+            {
+                CheckValidSystem(systems[i]);
+            }
+            //Get all current systems within scene after some have been removed
+            systems = GetAllGalaxySystems();
         }
-        //Get all current systems within scene after some have been removed
-        systems = GetAllGalaxySystems();
 
         //For every system.
         for (int i = 0; i < systems.Length; i++)
         {
-            //TODO: Calculate frequency of objects correctly, treat frequency as percentage. e.g. 17% of all nodes are energy resource. 
+            //TODO: Calculate frequency of resources correctly, treat frequency as percentage. e.g. 17% of all nodes are energy resource. 
             //Calculate 17% of how many nodes there are, then iterate over systems array this many times and set nodes to that type.
             if (systems[i] != null)
             {
