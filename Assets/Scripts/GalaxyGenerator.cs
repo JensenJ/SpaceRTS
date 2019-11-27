@@ -3,33 +3,9 @@
 
 public class GalaxyGenerator : MonoBehaviour
 {
-    //Node Colours
-    [Header("System Resource Generation Settings: ")]
-    [Space(20)]
-    [SerializeField]
-    Color defaultColor = Color.black;
-
-    [Space(10)]
-    [SerializeField]
-    Color shopRepairColor = Color.black;
-    [SerializeField]
-    int shopFrequency = 5;
-
-    [Space(10)]
-    [SerializeField]
-    Color fuelColor = Color.black;
-    [SerializeField]
-    int fuelFrequency = 20;
-
-    [Space(10)]
-    [SerializeField]
-    Color energyColor = Color.black;
-    [SerializeField]
-    int energyFrequency = 30;
 
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
-    [Space(20)]
     [SerializeField]
     [Range(0.1f, 3.0f)]
     float systemDensity = 0.6f;
@@ -40,10 +16,10 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0.0f, 50.0f)]
     float systemCenterRadius = 25.0f;
     [SerializeField]
-    [Range(0, 10)]
+    [Range(0, 16)]
     int systemRingCount = 8;
     [SerializeField]
-    [Range(0.01f, 10.0f)]
+    [Range(0.01f, 2.0f)]
     float systemCollisionDistance = 1.5f;
     [SerializeField]
     bool systemCollisions = true;
@@ -61,8 +37,39 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     GameObject ringPrefab = null;
 
-    [SerializeField]
     GameObject[] systems;
+
+    //Node Colours
+    [Header("System Resource Generation Settings: ")]
+    [SerializeField]
+    bool systemResources = true;
+
+    [Space(10)]
+    [SerializeField]
+    Color defaultColor = Color.white;
+
+    [Space(10)]
+    [SerializeField]
+    Color shopRepairColor = Color.white;
+    [SerializeField]
+    [Range(0, 100)]
+    float shopPercent = 5;
+
+    [Space(10)]
+    [SerializeField]
+    Color fuelColor = Color.white;
+    [SerializeField]
+    [Range(0, 100)]
+    float fuelPercent = 20;
+
+    [Space(10)]
+    [SerializeField]
+    Color energyColor = Color.white;
+    [SerializeField]
+    [Range(0, 100)]
+    float energyPercent = 30;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -136,39 +143,40 @@ public class GalaxyGenerator : MonoBehaviour
             systems = GetAllGalaxySystems();
         }
 
+
+
         //For every system.
         for (int i = 0; i < systems.Length; i++)
         {
-            //TODO: Calculate frequency of resources correctly, treat frequency as percentage. e.g. 17% of all nodes are energy resource. 
-            //Calculate 17% of how many nodes there are, then iterate over systems array this many times and set nodes to that type.
             if (systems[i] != null)
             {
                 GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
-                if (i % shopFrequency == 0)
-                {
-                    node.SetNodeType(GalaxyNode.NodeType.ShopRepair);
-                    node.SetColor(shopRepairColor);
-                    node.name = "Node " + i + " (Shop / Repair)";
-                }
-                else if (i % fuelFrequency == 0)
-                {
-                    node.SetNodeType(GalaxyNode.NodeType.Fuel);
-                    node.SetColor(fuelColor);
-                    node.name = "Node " + i + " (Fuel)";
-                }
-                else if (i % energyFrequency == 0)
-                {
-                    node.SetNodeType(GalaxyNode.NodeType.Energy);
-                    node.SetColor(energyColor);
-                    node.name = "Node " + i + " (Energy)";
-                }
-                else
-                {
-                    node.SetNodeType(GalaxyNode.NodeType.None);
-                    node.SetColor(defaultColor);
-                    node.name = "Node " + i + " (Default)";
-                }
+                node.SetNodeType(GalaxyNode.NodeType.None);
+                node.SetColor(defaultColor);
+                node.name = "Node " + i;
+
             }
+        }
+
+        //If resources are enabled
+        if (systemResources == true)
+        {
+            //Prevents infinite loop 
+            if(shopPercent + fuelPercent + energyPercent > 100)
+            {
+                Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
+                return;
+            }
+
+            //Calculate how many of each resource type there are.
+            int shopNodeCount = Mathf.FloorToInt(shopPercent / 100 * systems.Length);
+            int fuelNodeCount = Mathf.FloorToInt(fuelPercent / 100 * systems.Length);
+            int energyNodeCount = Mathf.FloorToInt(energyPercent / 100 * systems.Length);
+
+            //Generate resource nodes
+            GenerateResourceNodes(shopNodeCount, GalaxyNode.NodeType.ShopRepair, shopRepairColor);
+            GenerateResourceNodes(fuelNodeCount, GalaxyNode.NodeType.Fuel, fuelColor);
+            GenerateResourceNodes(energyNodeCount, GalaxyNode.NodeType.Energy, energyColor);
         }
     }
 
@@ -194,6 +202,34 @@ public class GalaxyGenerator : MonoBehaviour
                 if (distance <= systemCollisionDistance)
                 {
                     DestroyImmediate(system);
+                }
+            }
+        }
+    }
+
+    //Determines which nodes should be resource nodes
+    void GenerateResourceNodes(int count, GalaxyNode.NodeType nodeType, Color nodeColour)
+    {
+        //Repeat for the number of nodes that are designated as the nodetype
+        for (int j = 0; j < count; j++)
+        {
+            //Random node
+            GalaxyNode node = systems[Random.Range(0, systems.Length)].GetComponent<GalaxyNode>();
+            //Null pointer check
+            if (node != null)
+            {
+                //Check node is not another resource
+                if (node.GetNodeType() == GalaxyNode.NodeType.None)
+                {
+                    //Node settings
+                    node.SetNodeType(nodeType);
+                    node.SetColor(nodeColour);
+                    node.name = node.name + " (" + nodeType.ToString() + ")";
+                }
+                else
+                {
+                    //Keep repeating until node count fulfilled.
+                    j--;
                 }
             }
         }
