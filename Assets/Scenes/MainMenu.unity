@@ -149,26 +149,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  systemDensity: 0.1
+  systemDensity: 0.535
   systemRadius: 100
   systemCenterRadius: 0
   systemRingCount: 4
   systemCollisionDistance: 1.5
   systemCollisions: 1
   systemEquidistant: 0
-  systemRingWidth: 3
+  systemRingWidth: 1.5
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
     type: 3}
   systemResources: 1
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
-  shopRepairColor: {r: 0, g: 0.34998178, b: 1, a: 1}
-  shopPercent: 5.7
   systemResourcesData:
   - name: Fuel
     resourceRichnessMultiplier: 1
-    resourcePercentage: 42.2
+    resourcePercentage: 24
     currentNodeCount: 0
     nodeResourceType: 2
     nodeColour: {r: 1, g: 0.5506037, b: 0, a: 1}
@@ -184,6 +182,7 @@ MonoBehaviour:
     currentNodeCount: 0
     nodeResourceType: 3
     nodeColour: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 1}
+  coroutineYieldIntervals: 50
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0

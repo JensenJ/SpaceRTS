@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class GalaxyGenerator : MonoBehaviour
 {
@@ -6,7 +7,7 @@ public class GalaxyGenerator : MonoBehaviour
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
     [SerializeField]
-    [Range(0.01f, 5.0f)]
+    [Range(0.01f, 2.0f)]
     float systemDensity = 0.6f;
     [SerializeField]
     [Range(50.0f, 250.0f)]
@@ -27,7 +28,7 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     bool systemEquidistant = true;
     [SerializeField]
-    [Range(0.01f, 3.0f)]
+    [Range(0.01f, 1.5f)]
     float systemRingWidth = 1.0f;
 
     [Space(20)]
@@ -47,23 +48,25 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     Color defaultColor = Color.white;
 
-    [Space(10)]
-    [SerializeField]
-    Color shopRepairColor = Color.white;
-    [SerializeField]
-    [Range(0, 100)]
-    float shopPercent = 5;
-
-    //new resource systems
     [SerializeField]
     public GalaxyNodeResource[] systemResourcesData;
 
+    IEnumerator currentGenerateCoroutine;
 
+    [Header("Debug: ")]
+    [SerializeField]
+    int coroutineYieldIntervals = 10;
 
     // Start is called before the first frame update
     void Start()
     {
-        SpawnGalaxy();
+        if (currentGenerateCoroutine != null)
+        {
+            StopCoroutine(currentGenerateCoroutine);
+        }
+
+        currentGenerateCoroutine = SpawnGalaxy();
+        StartCoroutine(currentGenerateCoroutine);
     }
 
     // Update is called once per frame
@@ -72,7 +75,7 @@ public class GalaxyGenerator : MonoBehaviour
         
     }
 
-    void SpawnGalaxy()
+    IEnumerator SpawnGalaxy()
     {
         //For each system ring
         for (int i = 0; i < systemRingCount; i++)
@@ -116,6 +119,10 @@ public class GalaxyGenerator : MonoBehaviour
                 }
                 //Calculate position
                 Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
+                if(j % coroutineYieldIntervals == 0)
+                {
+                    yield return null;
+                }
             }
         }
         //Get all current systems within scene
@@ -127,6 +134,10 @@ public class GalaxyGenerator : MonoBehaviour
             for (int i = 0; i < systems.Length; i++)
             {
                 CheckValidSystem(systems[i]);
+                if(i % coroutineYieldIntervals == 0)
+                {
+                    yield return null;
+                }
             }
             //Get all current systems within scene after some have been removed
             systems = GetAllGalaxySystems();
@@ -158,7 +169,7 @@ public class GalaxyGenerator : MonoBehaviour
                 if(totalPercentage > 100)
                 {
                     Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
-                    return;
+                    yield break;
                 }
 
                 systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
