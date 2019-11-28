@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 
-
 public class GalaxyGenerator : MonoBehaviour
 {
 
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
     [SerializeField]
-    [Range(0.1f, 3.0f)]
+    [Range(0.01f, 5.0f)]
     float systemDensity = 0.6f;
     [SerializeField]
     [Range(50.0f, 250.0f)]
@@ -28,7 +27,7 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     bool systemEquidistant = true;
     [SerializeField]
-    [Range(0.01f, 0.5f)]
+    [Range(0.01f, 3.0f)]
     float systemRingWidth = 1.0f;
 
     [Space(20)]
@@ -55,19 +54,9 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0, 100)]
     float shopPercent = 5;
 
-    [Space(10)]
+    //new resource systems
     [SerializeField]
-    Color fuelColor = Color.white;
-    [SerializeField]
-    [Range(0, 100)]
-    float fuelPercent = 20;
-
-    [Space(10)]
-    [SerializeField]
-    Color energyColor = Color.white;
-    [SerializeField]
-    [Range(0, 100)]
-    float energyPercent = 30;
+    public GalaxyNodeResource[] systemResourcesData;
 
 
 
@@ -161,22 +150,20 @@ public class GalaxyGenerator : MonoBehaviour
         //If resources are enabled
         if (systemResources == true)
         {
-            //Prevents infinite loop 
-            if(shopPercent + fuelPercent + energyPercent > 100)
+            //Prevents infinite loop
+            float totalPercentage = 0;
+            for (int i = 0; i < systemResourcesData.Length; i++)
             {
-                Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
-                return;
+                totalPercentage += systemResourcesData[i].resourcePercentage;
+                if(totalPercentage > 100)
+                {
+                    Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
+                    return;
+                }
+
+                systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
+                GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour);
             }
-
-            //Calculate how many of each resource type there are.
-            int shopNodeCount = Mathf.FloorToInt(shopPercent / 100 * systems.Length);
-            int fuelNodeCount = Mathf.FloorToInt(fuelPercent / 100 * systems.Length);
-            int energyNodeCount = Mathf.FloorToInt(energyPercent / 100 * systems.Length);
-
-            //Generate resource nodes
-            GenerateResourceNodes(shopNodeCount, GalaxyNode.NodeType.ShopRepair, shopRepairColor);
-            GenerateResourceNodes(fuelNodeCount, GalaxyNode.NodeType.Fuel, fuelColor);
-            GenerateResourceNodes(energyNodeCount, GalaxyNode.NodeType.Energy, energyColor);
         }
     }
 
@@ -208,7 +195,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Determines which nodes should be resource nodes
-    void GenerateResourceNodes(int count, GalaxyNode.NodeType nodeType, Color nodeColour)
+    void GenerateResourceNodes(int count, GalaxyNode.NodeResource resourceType, Color nodeColour)
     {
         //Repeat for the number of nodes that are designated as the nodetype
         for (int j = 0; j < count; j++)
@@ -222,9 +209,9 @@ public class GalaxyGenerator : MonoBehaviour
                 if (node.GetNodeType() == GalaxyNode.NodeType.None)
                 {
                     //Node settings
-                    node.SetNodeType(nodeType);
+                    node.SetResourceType(resourceType);
                     node.SetColor(nodeColour);
-                    node.name = node.name + " (" + nodeType.ToString() + ")";
+                    node.name = node.name + " (" + resourceType.ToString() + ")";
                 }
                 else
                 {
@@ -240,4 +227,17 @@ public class GalaxyGenerator : MonoBehaviour
     {
         return GameObject.FindGameObjectsWithTag("GalaxySystem");
     }
+}
+
+[System.Serializable]
+public struct GalaxyNodeResource
+{
+    public string name;
+    [Range(0.1f, 2.0f)]
+    public float resourceRichnessMultiplier;
+    [Range(0, 100)]
+    public float resourcePercentage;
+    public int currentNodeCount;
+    public GalaxyNode.NodeResource nodeResourceType;
+    public Color nodeColour;
 }

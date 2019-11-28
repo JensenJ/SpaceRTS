@@ -6,13 +6,23 @@ public class GalaxyNode : MonoBehaviour
 
     public enum NodeType {
         None,
+        Resource,
+        Shop
+    }
+
+    public enum NodeResource
+    {
+        None,
         Energy,
         Fuel,
-        ShopRepair
+        Minerals
     }
 
     [SerializeField]
     private NodeType type = NodeType.None;
+
+    [SerializeField]
+    private NodeResource resource = NodeResource.None;
 
     [SerializeField]
     int totalResource = 100;
@@ -26,14 +36,14 @@ public class GalaxyNode : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public NodeType GetNodeType()
     {
         return type;
     }
-    
+
     public void SetNodeType(NodeType m_type)
     {
         type = m_type;
@@ -41,13 +51,16 @@ public class GalaxyNode : MonoBehaviour
         switch (type) {
             case NodeType.None:
                 break;
-            case NodeType.Energy:
+            case NodeType.Resource:
                 break;
-            case NodeType.Fuel:
-                break;
-            case NodeType.ShopRepair:
+            case NodeType.Shop:
                 break;
         }
+    }
+
+    public void SetResourceType(NodeResource m_resource)
+    {
+        resource = m_resource;
     }
 
     public void SetColor(Color newColor)

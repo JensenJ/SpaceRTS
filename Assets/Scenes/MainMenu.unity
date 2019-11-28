@@ -149,14 +149,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  systemDensity: 0.41
+  systemDensity: 0.1
   systemRadius: 100
   systemCenterRadius: 0
   systemRingCount: 4
   systemCollisionDistance: 1.5
   systemCollisions: 1
   systemEquidistant: 0
-  systemRingWidth: 0.5
+  systemRingWidth: 3
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
@@ -164,11 +164,26 @@ MonoBehaviour:
   systemResources: 1
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   shopRepairColor: {r: 0, g: 0.34998178, b: 1, a: 1}
-  shopPercent: 25
-  fuelColor: {r: 1, g: 0.56976867, b: 0, a: 1}
-  fuelPercent: 25
-  energyColor: {r: 1, g: 0.85015744, b: 0.02352941, a: 1}
-  energyPercent: 50
+  shopPercent: 5.7
+  systemResourcesData:
+  - name: Fuel
+    resourceRichnessMultiplier: 1
+    resourcePercentage: 42.2
+    currentNodeCount: 0
+    nodeResourceType: 2
+    nodeColour: {r: 1, g: 0.5506037, b: 0, a: 1}
+  - name: Energy
+    resourceRichnessMultiplier: 1
+    resourcePercentage: 25.6
+    currentNodeCount: 0
+    nodeResourceType: 1
+    nodeColour: {r: 1, g: 0.8735534, b: 0, a: 1}
+  - name: Minerals
+    resourceRichnessMultiplier: 1
+    resourcePercentage: 11
+    currentNodeCount: 0
+    nodeResourceType: 3
+    nodeColour: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 1}
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0
@@ -346,84 +361,4 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1734889052
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1734889054}
-  - component: {fileID: 1734889053}
-  m_Layer: 0
-  m_Name: Playership
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!212 &1734889053
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1734889052}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
---- !u!4 &1734889054
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1734889052}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
