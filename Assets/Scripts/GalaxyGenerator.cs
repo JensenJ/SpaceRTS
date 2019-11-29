@@ -7,7 +7,7 @@ public class GalaxyGenerator : MonoBehaviour
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
     [SerializeField]
-    [Range(0.01f, 2.0f)]
+    [Range(0.01f, 1.0f)]
     float systemDensity = 0.6f;
     [SerializeField]
     [Range(50.0f, 250.0f)]
@@ -16,8 +16,8 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0.0f, 50.0f)]
     float systemCenterRadius = 25.0f;
     [SerializeField]
-    [Range(0, 16)]
-    int systemRingCount = 8;
+    [Range(0, 8)]
+    int systemRingCount = 4;
     [SerializeField]
     [Range(0.01f, 2.0f)]
     float systemCollisionDistance = 1.5f;
@@ -28,7 +28,7 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     bool systemEquidistant = true;
     [SerializeField]
-    [Range(0.01f, 1.5f)]
+    [Range(0.25f, 1.5f)]
     float systemRingWidth = 1.0f;
 
     [Space(20)]
@@ -119,7 +119,7 @@ public class GalaxyGenerator : MonoBehaviour
                 }
                 //Calculate position
                 Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
-                if(j % coroutineYieldIntervals == 0)
+                if(j % (coroutineYieldIntervals * 10) == 0)
                 {
                     yield return null;
                 }
@@ -143,8 +143,6 @@ public class GalaxyGenerator : MonoBehaviour
             systems = GetAllGalaxySystems();
         }
 
-
-
         //For every system.
         for (int i = 0; i < systems.Length; i++)
         {
@@ -152,7 +150,7 @@ public class GalaxyGenerator : MonoBehaviour
             {
                 GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
                 node.SetNodeType(GalaxyNode.NodeType.None);
-                node.SetColor(defaultColor);
+                node.SetResourceColor(defaultColor);
                 node.name = "Node " + i;
 
             }
@@ -173,7 +171,7 @@ public class GalaxyGenerator : MonoBehaviour
                 }
 
                 systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
-                GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour);
+                GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour, systemResourcesData[i].resourceRichnessMultiplier);
             }
         }
     }
@@ -206,7 +204,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Determines which nodes should be resource nodes
-    void GenerateResourceNodes(int count, GalaxyNode.NodeResource resourceType, Color nodeColour)
+    void GenerateResourceNodes(int count, GalaxyNode.NodeResource resourceType, Color nodeColour, float resourceRichness)
     {
         //Repeat for the number of nodes that are designated as the nodetype
         for (int j = 0; j < count; j++)
@@ -220,8 +218,8 @@ public class GalaxyGenerator : MonoBehaviour
                 if (node.GetNodeType() == GalaxyNode.NodeType.None)
                 {
                     //Node settings
-                    node.SetResourceType(resourceType);
-                    node.SetColor(nodeColour);
+                    node.SetResourceType(resourceType, Mathf.FloorToInt(resourceRichness * Random.Range(3.0f, 7.0f)));
+                    node.SetResourceColor(nodeColour);
                     node.name = node.name + " (" + resourceType.ToString() + ")";
                 }
                 else
@@ -244,7 +242,7 @@ public class GalaxyGenerator : MonoBehaviour
 public struct GalaxyNodeResource
 {
     public string name;
-    [Range(0.1f, 2.0f)]
+    [Range(0.1f, 4.0f)]
     public float resourceRichnessMultiplier;
     [Range(0, 100)]
     public float resourcePercentage;

@@ -25,7 +25,10 @@ public class GalaxyNode : MonoBehaviour
     private NodeResource resource = NodeResource.None;
 
     [SerializeField]
-    int totalResource = 100;
+    int currentResource = 10;
+
+    [SerializeField]
+    int owningFactionID = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -37,11 +40,6 @@ public class GalaxyNode : MonoBehaviour
     void Update()
     {
 
-    }
-
-    public NodeType GetNodeType()
-    {
-        return type;
     }
 
     public void SetNodeType(NodeType m_type)
@@ -58,14 +56,36 @@ public class GalaxyNode : MonoBehaviour
         }
     }
 
-    public void SetResourceType(NodeResource m_resource)
+    public void SetResourceType(NodeResource m_resource, int resourceAmount)
     {
         resource = m_resource;
+        currentResource = resourceAmount;
     }
 
-    public void SetColor(Color newColor)
+    public void SetOwningFaction(int factionID, Color factionColour)
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        renderer.color = newColor;
+        owningFactionID = factionID;
+        SpriteRenderer renderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        renderer.color = factionColour;
+    }
+
+    public void SetResourceColor(Color resourceColor)
+    {
+        SpriteRenderer renderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        renderer.color = resourceColor;
+    }
+
+    public NodeResource GetResourceType()
+    {
+        return resource;
+    }
+    public NodeType GetNodeType()
+    {
+        return type;
+    }
+
+    public int GetOwningFactionID()
+    {
+        return owningFactionID;
     }
 }
