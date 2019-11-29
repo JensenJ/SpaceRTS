@@ -220,6 +220,7 @@ public class GalaxyGenerator : MonoBehaviour
                     //Node settings
                     node.SetResourceType(resourceType, Mathf.FloorToInt(resourceRichness * Random.Range(3.0f, 7.0f)));
                     node.SetResourceColor(nodeColour);
+                    node.SetNodeType(GalaxyNode.NodeType.Resource);
                     node.name = node.name + " (" + resourceType.ToString() + ")";
                 }
                 else
