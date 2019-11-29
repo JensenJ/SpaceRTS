@@ -149,14 +149,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  systemDensity: 1
+  systemDensity: 0.6
   systemRadius: 100
   systemCenterRadius: 0
   systemRingCount: 4
-  systemCollisionDistance: 1.5
+  systemCollisionDistance: 1.25
   systemCollisions: 1
+  randomGeneration: 1
   systemEquidistant: 0
-  systemRingWidth: 0.57
+  systemRingWidth: 1.38
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,

@@ -19,16 +19,18 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0, 8)]
     int systemRingCount = 4;
     [SerializeField]
-    [Range(0.01f, 2.0f)]
+    [Range(0.01f, 5.0f)]
     float systemCollisionDistance = 1.5f;
     [SerializeField]
     bool systemCollisions = true;
+    [SerializeField]
+    bool randomGeneration = false;
 
     [Space(10)]
     [SerializeField]
     bool systemEquidistant = true;
     [SerializeField]
-    [Range(0.25f, 1.5f)]
+    [Range(0.25f, 4.0f)]
     float systemRingWidth = 1.0f;
 
     [Space(20)]
@@ -60,6 +62,16 @@ public class GalaxyGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(randomGeneration == true)
+        {
+            systemDensity = Random.Range(0.2f, 0.4f);
+            systemCenterRadius = Random.Range(0.0f, 25.0f);
+            systemRingCount = Random.Range(4, 10);
+            systemRingWidth = Random.Range(1.0f, 3.5f);
+            systemCollisionDistance = Random.Range(1.5f, 2.25f);
+            systemRadius = systemRingCount * 25.0f;
+        }
+
         if (currentGenerateCoroutine != null)
         {
             StopCoroutine(currentGenerateCoroutine);
@@ -176,6 +188,7 @@ public class GalaxyGenerator : MonoBehaviour
         }
     }
 
+    //TODO: Make more efficient
     void CheckValidSystem(GameObject system)
     {
         //Get location of current system
