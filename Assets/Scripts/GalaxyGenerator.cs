@@ -54,24 +54,35 @@ public class GalaxyGenerator : MonoBehaviour
     public GalaxyNodeResource[] systemResourcesData;
 
     IEnumerator currentGenerateCoroutine;
+    float startTime;
 
     [Header("Debug: ")]
     [SerializeField]
-    int coroutineYieldIntervals = 10;
+    bool debugMode = false;
+    [SerializeField]
+    int coroutineGenerateYieldIntervals = 50;
+    [SerializeField]
+    int coroutineCollisionYieldIntervals = 10;
+    [SerializeField]
+    bool displayGenerationTime = false;
+
+    [SerializeField]
+    bool repeatGenerations = false;
+    [SerializeField]
+    int numberOfTimesToGenerate = 1;
+
+    [SerializeField]
+    float[] timings;
 
     // Start is called before the first frame update
     void Start()
     {
-        if(randomGeneration == true)
+        if(repeatGenerations == false || debugMode == false)
         {
-            systemDensity = Random.Range(0.2f, 0.4f);
-            systemCenterRadius = Random.Range(0.0f, 25.0f);
-            systemRingCount = Random.Range(4, 10);
-            systemRingWidth = Random.Range(1.0f, 3.5f);
-            systemCollisionDistance = Random.Range(1.5f, 2.25f);
-            systemRadius = systemRingCount * 25.0f;
+            numberOfTimesToGenerate = 1;
         }
 
+        timings = new float[numberOfTimesToGenerate];
         if (currentGenerateCoroutine != null)
         {
             StopCoroutine(currentGenerateCoroutine);
@@ -79,6 +90,7 @@ public class GalaxyGenerator : MonoBehaviour
 
         currentGenerateCoroutine = SpawnGalaxy();
         StartCoroutine(currentGenerateCoroutine);
+        
     }
 
     // Update is called once per frame
@@ -89,106 +101,154 @@ public class GalaxyGenerator : MonoBehaviour
 
     IEnumerator SpawnGalaxy()
     {
-        //For each system ring
-        for (int i = 0; i < systemRingCount; i++)
+        for (int k = 0; k < numberOfTimesToGenerate; k++)
         {
-            //Calculate segment size and ring radius
-            
-            float segmentSize = (systemRadius - systemCenterRadius) / systemRingCount;
-            float ringRadius = segmentSize * (i + 1);
 
-            //Calculate ring radius min/max
-            float minRingRadius = ringRadius - systemRingWidth;
-            float maxRingRadius = ringRadius + systemRingWidth;
-
-            //Calculate ring area
-            float upperArea = maxRingRadius * maxRingRadius * Mathf.PI;
-            float lowerArea = minRingRadius * minRingRadius * Mathf.PI;
-            float ringArea = upperArea - lowerArea;
-
-            //Calculate number of systems for each ring using formula: mass (number of systems) = density * volume (area).
-            int numberOfSystemsForRing = Mathf.FloorToInt(systemDensity * ringArea);
-
-            //Instantiate ring object for ring image, give gameobject ring name
-            GameObject galaxyRing = Instantiate(ringPrefab, new Vector2(0, 0), Quaternion.identity, transform);
-            galaxyRing.name = "GalaxyRing " + (i + 1);
-
-            for (int j = 0; j < numberOfSystemsForRing; j++)
+            startTime = Time.time;
+            if (randomGeneration == true)
             {
-                Vector2 newPos;
-                if (systemEquidistant)
+                systemDensity = Random.Range(0.2f, 0.25f);
+                systemCenterRadius = Random.Range(0.0f, 25.0f);
+                systemRingCount = Random.Range(4, 6);
+                systemRingWidth = Random.Range(1.25f, 3.0f);
+                systemCollisionDistance = Random.Range(1.5f, 2.25f);
+                systemRadius = systemRingCount * 25.0f;
+            }
+            //For each system ring
+            for (int i = 0; i < systemRingCount; i++)
+            {
+                //Calculate segment size and ring radius
+            
+                float segmentSize = (systemRadius - systemCenterRadius) / systemRingCount;
+                float ringRadius = segmentSize * (i + 1);
+
+                //Calculate ring radius min/max
+                float minRingRadius = ringRadius - systemRingWidth;
+                float maxRingRadius = ringRadius + systemRingWidth;
+
+                //Calculate ring area
+                float upperArea = maxRingRadius * maxRingRadius * Mathf.PI;
+                float lowerArea = minRingRadius * minRingRadius * Mathf.PI;
+                float ringArea = upperArea - lowerArea;
+
+                //Calculate number of systems for each ring using formula: mass (number of systems) = density * volume (area).
+                int numberOfSystemsForRing = Mathf.FloorToInt(systemDensity * ringArea);
+
+                //Instantiate ring object for ring image, give gameobject ring name
+                GameObject galaxyRing = Instantiate(ringPrefab, new Vector2(0, 0), Quaternion.identity, transform);
+                galaxyRing.name = "GalaxyRing " + (i + 1);
+
+                for (int j = 0; j < numberOfSystemsForRing; j++)
                 {
-                    //Spawn systems that have an equal distance from each other.
-                    float angle = j * Mathf.PI * 2f / numberOfSystemsForRing;
-                    newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius), Mathf.Sin(angle) * (ringRadius + systemCenterRadius));
-                }
-                else
-                {
-                    //Spawn systems randomly
-                    float angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
-                    newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingCount, systemRingWidth), 
-                        Mathf.Sin(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingWidth, systemRingWidth));
-                }
-                //Calculate position
-                Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
-                if(j % (coroutineYieldIntervals * 10) == 0)
-                {
-                    yield return null;
+                    Vector2 newPos;
+                    if (systemEquidistant)
+                    {
+                        //Spawn systems that have an equal distance from each other.
+                        float angle = j * Mathf.PI * 2f / numberOfSystemsForRing;
+                        newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius), Mathf.Sin(angle) * (ringRadius + systemCenterRadius));
+                    }
+                    else
+                    {
+                        //Spawn systems randomly
+                        float angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
+                        newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingCount, systemRingWidth), 
+                            Mathf.Sin(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingWidth, systemRingWidth));
+                    }
+                    //Calculate position
+                    Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
+                    if(j % coroutineGenerateYieldIntervals == 0)
+                    {
+                        yield return null;
+                    }
                 }
             }
-        }
-        //Get all current systems within scene
-        systems = GetAllGalaxySystems();
+            //Get all current systems within scene
+            systems = GetAllGalaxySystems();
 
-        if (systemCollisions == true)
-        {
-            //Remove colliding systems (check if they are valid)
+            if (systemCollisions == true)
+            {
+                //Remove colliding systems (check if they are valid)
+                for (int i = 0; i < systems.Length; i++)
+                {
+                    CheckValidSystem(systems[i]);
+                    if(i % coroutineCollisionYieldIntervals == 0)
+                    {
+                        yield return null;
+                    }
+                }
+                //Get all current systems within scene after some have been removed
+                systems = GetAllGalaxySystems();
+            }
+
+            //For every system.
             for (int i = 0; i < systems.Length; i++)
             {
-                CheckValidSystem(systems[i]);
-                if(i % coroutineYieldIntervals == 0)
+                if (systems[i] != null)
                 {
-                    yield return null;
+                    GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
+                    node.SetNodeType(GalaxyNode.NodeType.None);
+                    node.SetResourceColor(defaultColor);
+                    node.name = "Node " + i;
+
                 }
             }
-            //Get all current systems within scene after some have been removed
-            systems = GetAllGalaxySystems();
-        }
 
-        //For every system.
-        for (int i = 0; i < systems.Length; i++)
-        {
-            if (systems[i] != null)
+            //If resources are enabled
+            if (systemResources == true)
             {
-                GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
-                node.SetNodeType(GalaxyNode.NodeType.None);
-                node.SetResourceColor(defaultColor);
-                node.name = "Node " + i;
-
-            }
-        }
-
-        //If resources are enabled
-        if (systemResources == true)
-        {
-            //Prevents infinite loop
-            float totalPercentage = 0;
-            for (int i = 0; i < systemResourcesData.Length; i++)
-            {
-                totalPercentage += systemResourcesData[i].resourcePercentage;
-                if(totalPercentage > 100)
+                //Prevents infinite loop
+                float totalPercentage = 0;
+                for (int i = 0; i < systemResourcesData.Length; i++)
                 {
-                    Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
-                    yield break;
-                }
+                    totalPercentage += systemResourcesData[i].resourcePercentage;
+                    if(totalPercentage > 100)
+                    {
+                        Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
+                        yield break;
+                    }
 
-                systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
-                GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour, systemResourcesData[i].resourceRichnessMultiplier);
+                    systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
+                    GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour, systemResourcesData[i].resourceRichnessMultiplier);
+                }
+            }
+            if (debugMode == true)
+            {
+                //Display generation times
+                if (displayGenerationTime == true)
+                {
+                    //Calculate time taken
+                    timings[k] = Time.time - startTime;
+                    Debug.Log("Time taken to generate galaxy: " + timings[k] + " seconds");
+                    //Total time taken for generation
+                    if(numberOfTimesToGenerate == k + 1)
+                    {
+                        float total = 0.0f;
+                        //For every timing, add to total
+                        for (int i = 0; i < timings.Length; i++)
+                        {
+                            total += timings[i];
+                        }
+                        //Print total
+                        Debug.Log("Total time taken to generate " + numberOfTimesToGenerate + " galaxies: " + total + " seconds");
+                    }
+                }
+                //Repeatedly destroy galaxy and recreate until the number of generations is met
+                if (repeatGenerations == true)
+                {
+                    //Only destroy if not last galaxy to generate.
+                    if (numberOfTimesToGenerate != k + 1)
+                    {
+                        for (int i = 0; i < systemRingCount; i++)
+                        {
+                            //timings[i] = Time.time - startTime;
+                            Destroy(transform.GetChild(i + 1).gameObject);
+                        }
+                    }
+                }
             }
         }
     }
 
-    //TODO: Make more efficient
     void CheckValidSystem(GameObject system)
     {
         //Get location of current system
