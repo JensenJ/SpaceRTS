@@ -72,6 +72,8 @@ public class GalaxyGenerator : MonoBehaviour
     bool repeatGenerations = false;
     [SerializeField]
     int numberOfTimesToGenerate = 1;
+    [SerializeField]
+    int currentGeneration = 0;
 
     float[] timings;
     float[] densities;
@@ -240,7 +242,7 @@ public class GalaxyGenerator : MonoBehaviour
                 //Display generation times
                 if (displayGenerationTime == true)
                 {
-                    Debug.Log("Time taken to generate galaxy: " + timings[k] + " seconds");
+                    Debug.Log("Time taken to generate galaxy " + k + ": " + timings[k] + " seconds");
                     //Total time taken for generation
                     if(numberOfTimesToGenerate == k + 1)
                     {
@@ -273,12 +275,12 @@ public class GalaxyGenerator : MonoBehaviour
                     //Data for each heading
                     for (int i = 0; i < numberOfTimesToGenerate; i++)
                     {
-                        data[0, i] = timings[i].ToString();
-                        data[1, i] = densities[i].ToString();
-                        data[2, i] = centerRadii[i].ToString();
+                        data[0, i] = timings[i].ToString("n4");
+                        data[1, i] = densities[i].ToString("n4");
+                        data[2, i] = centerRadii[i].ToString("n4");
                         data[3, i] = ringCounts[i].ToString();
-                        data[4, i] = ringWidths[i].ToString();
-                        data[5, i] = collisionDistances[i].ToString();
+                        data[4, i] = ringWidths[i].ToString("n4");
+                        data[5, i] = collisionDistances[i].ToString("n4");
                         data[6, i] = radii[i].ToString();
                     }
                     Utilities.WriteToCSV("GenerationTime", headings, data);
@@ -289,6 +291,7 @@ public class GalaxyGenerator : MonoBehaviour
                     //Only destroy if not last galaxy to generate.
                     if (numberOfTimesToGenerate != k + 1)
                     {
+                        currentGeneration++;
                         for (int i = 0; i < systemRingCount; i++)
                         {
                             //timings[i] = Time.time - startTime;

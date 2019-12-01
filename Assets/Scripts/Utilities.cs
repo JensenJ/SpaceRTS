@@ -46,6 +46,7 @@ public class Utilities
 
         //Get file path
         string filePath = getPath(fileName);
+        Debug.Log("File path for " + fileName + ".csv is " + filePath);
 
         //Write to file
         StreamWriter outStream = System.IO.File.CreateText(filePath);
@@ -56,6 +57,21 @@ public class Utilities
     // Gets the file path
     private static string getPath(string fileName)
     {
-        return Application.dataPath + "/Logs/" + fileName + ".csv";
+        if (Application.isEditor)
+        {
+            if (!Directory.Exists(Application.dataPath + "/Logs/"))
+            {
+                Directory.CreateDirectory(Application.dataPath + "/Logs/");
+            }
+            return Application.dataPath + "/Logs/" + fileName + ".csv";
+        }
+        else
+        {
+            if(!Directory.Exists(Application.persistentDataPath + "/Logs/"))
+            {
+                Directory.CreateDirectory(Application.persistentDataPath + "/Logs/");
+            }
+            return Application.persistentDataPath + "/Logs/" + fileName + ".csv";
+        }
     }
 }
