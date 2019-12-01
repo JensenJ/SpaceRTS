@@ -186,10 +186,10 @@ MonoBehaviour:
   debugMode: 1
   coroutineGenerateYieldIntervals: 500
   coroutineCollisionYieldIntervals: 30
-  displayGenerationTime: 1
-  repeatGenerations: 0
-  numberOfTimesToGenerate: 50
-  timings: []
+  displayGenerationTime: 0
+  printGenerationDataToCSV: 1
+  repeatGenerations: 1
+  numberOfTimesToGenerate: 30
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0

@@ -65,14 +65,21 @@ public class GalaxyGenerator : MonoBehaviour
     int coroutineCollisionYieldIntervals = 10;
     [SerializeField]
     bool displayGenerationTime = false;
+    [SerializeField]
+    bool printGenerationDataToCSV = false;
 
     [SerializeField]
     bool repeatGenerations = false;
     [SerializeField]
     int numberOfTimesToGenerate = 1;
 
-    [SerializeField]
     float[] timings;
+    float[] densities;
+    float[] centerRadii;
+    float[] ringCounts;
+    float[] ringWidths;
+    float[] collisionDistances;
+    float[] radii;
 
     // Start is called before the first frame update
     void Start()
@@ -82,7 +89,15 @@ public class GalaxyGenerator : MonoBehaviour
             numberOfTimesToGenerate = 1;
         }
 
+        //Initialise diagnostics arrays
         timings = new float[numberOfTimesToGenerate];
+        densities = new float[numberOfTimesToGenerate];
+        centerRadii = new float[numberOfTimesToGenerate];
+        ringCounts = new float[numberOfTimesToGenerate];
+        ringWidths = new float[numberOfTimesToGenerate];
+        collisionDistances = new float[numberOfTimesToGenerate];
+        radii = new float[numberOfTimesToGenerate];
+
         if (currentGenerateCoroutine != null)
         {
             StopCoroutine(currentGenerateCoroutine);
@@ -113,6 +128,13 @@ public class GalaxyGenerator : MonoBehaviour
                 systemRingWidth = Random.Range(1.25f, 3.0f);
                 systemCollisionDistance = Random.Range(1.5f, 2.25f);
                 systemRadius = systemRingCount * 25.0f;
+
+                densities[k] = systemDensity;
+                centerRadii[k] = systemCenterRadius;
+                ringCounts[k] = systemRingCount;
+                ringWidths[k] = systemRingWidth;
+                collisionDistances[k] = systemCollisionDistance;
+                radii[k] = systemRadius;
             }
             //For each system ring
             for (int i = 0; i < systemRingCount; i++)
@@ -211,13 +233,13 @@ public class GalaxyGenerator : MonoBehaviour
                     GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour, systemResourcesData[i].resourceRichnessMultiplier);
                 }
             }
+            //Calculate time taken
+            timings[k] = Time.time - startTime;
             if (debugMode == true)
             {
                 //Display generation times
                 if (displayGenerationTime == true)
                 {
-                    //Calculate time taken
-                    timings[k] = Time.time - startTime;
                     Debug.Log("Time taken to generate galaxy: " + timings[k] + " seconds");
                     //Total time taken for generation
                     if(numberOfTimesToGenerate == k + 1)
@@ -231,6 +253,35 @@ public class GalaxyGenerator : MonoBehaviour
                         //Print total
                         Debug.Log("Total time taken to generate " + numberOfTimesToGenerate + " galaxies: " + total + " seconds");
                     }
+                }
+                //print data to CSV only when on last generation
+                if(printGenerationDataToCSV == true && numberOfTimesToGenerate == k + 1)
+                {
+                    int numberOfHeadings = 7;
+                    string[,] data = new string[numberOfHeadings, numberOfTimesToGenerate];
+                    string[] headings = new string[numberOfHeadings];
+
+                    //Headings
+                    headings[0] = "Time (s):";
+                    headings[1] = "Density";
+                    headings[2] = "Center Radius";
+                    headings[3] = "Ring Count";
+                    headings[4] = "Ring Width";
+                    headings[5] = "Collision Dist";
+                    headings[6] = "Radius";
+
+                    //Data for each heading
+                    for (int i = 0; i < numberOfTimesToGenerate; i++)
+                    {
+                        data[0, i] = timings[i].ToString();
+                        data[1, i] = densities[i].ToString();
+                        data[2, i] = centerRadii[i].ToString();
+                        data[3, i] = ringCounts[i].ToString();
+                        data[4, i] = ringWidths[i].ToString();
+                        data[5, i] = collisionDistances[i].ToString();
+                        data[6, i] = radii[i].ToString();
+                    }
+                    Utilities.WriteToCSV("GenerationTime", headings, data);
                 }
                 //Repeatedly destroy galaxy and recreate until the number of generations is met
                 if (repeatGenerations == true)
