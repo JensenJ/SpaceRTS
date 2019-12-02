@@ -59,19 +59,19 @@ public class Utilities
     {
         if (Application.isEditor)
         {
-            if (!Directory.Exists(Application.dataPath + "/Logs/"))
+            if (!Directory.Exists(Application.dataPath + "/Data/"))
             {
-                Directory.CreateDirectory(Application.dataPath + "/Logs/");
+                Directory.CreateDirectory(Application.dataPath + "/Data/");
             }
-            return Application.dataPath + "/Logs/" + fileName + ".csv";
+            return Application.dataPath + "/Data/" + fileName + ".csv";
         }
         else
         {
-            if(!Directory.Exists(Application.persistentDataPath + "/Logs/"))
+            if(!Directory.Exists(Application.persistentDataPath + "/Data/"))
             {
-                Directory.CreateDirectory(Application.persistentDataPath + "/Logs/");
+                Directory.CreateDirectory(Application.persistentDataPath + "/Data/");
             }
-            return Application.persistentDataPath + "/Logs/" + fileName + ".csv";
+            return Application.persistentDataPath + "/Data/" + fileName + ".csv";
         }
     }
 }

@@ -13,6 +13,9 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(50.0f, 250.0f)]
     float systemRadius = 100.0f;
     [SerializeField]
+    [Range(10.0f, 100.0f)]
+    float ringIntervalMultiplier = 25.0f;
+    [SerializeField]
     [Range(0.0f, 50.0f)]
     float systemCenterRadius = 25.0f;
     [SerializeField]
@@ -25,6 +28,9 @@ public class GalaxyGenerator : MonoBehaviour
     bool systemCollisions = true;
     [SerializeField]
     bool randomGeneration = false;
+
+    [SerializeField]
+    int numberOfSystemsGenerated = 0;
 
     [Space(10)]
     [SerializeField]
@@ -78,10 +84,12 @@ public class GalaxyGenerator : MonoBehaviour
     float[] timings;
     float[] densities;
     float[] centerRadii;
-    float[] ringCounts;
+    int[] ringCounts;
     float[] ringWidths;
     float[] collisionDistances;
     float[] radii;
+    int[] numberOfSystems;
+    float[] ringIntervals;
 
     // Start is called before the first frame update
     void Start()
@@ -91,14 +99,18 @@ public class GalaxyGenerator : MonoBehaviour
             numberOfTimesToGenerate = 1;
         }
 
+
         //Initialise diagnostics arrays
         timings = new float[numberOfTimesToGenerate];
         densities = new float[numberOfTimesToGenerate];
         centerRadii = new float[numberOfTimesToGenerate];
-        ringCounts = new float[numberOfTimesToGenerate];
+        ringCounts = new int[numberOfTimesToGenerate];
         ringWidths = new float[numberOfTimesToGenerate];
         collisionDistances = new float[numberOfTimesToGenerate];
         radii = new float[numberOfTimesToGenerate];
+        ringIntervals = new float[numberOfTimesToGenerate];
+        numberOfSystems = new int[numberOfTimesToGenerate];
+
 
         if (currentGenerateCoroutine != null)
         {
@@ -120,7 +132,7 @@ public class GalaxyGenerator : MonoBehaviour
     {
         for (int k = 0; k < numberOfTimesToGenerate; k++)
         {
-
+            numberOfSystemsGenerated = 0;
             startTime = Time.time;
             if (randomGeneration == true)
             {
@@ -129,7 +141,7 @@ public class GalaxyGenerator : MonoBehaviour
                 systemRingCount = Random.Range(4, 6);
                 systemRingWidth = Random.Range(1.25f, 3.0f);
                 systemCollisionDistance = Random.Range(1.5f, 2.25f);
-                systemRadius = systemRingCount * 25.0f;
+                systemRadius = systemRingCount * ringIntervalMultiplier;
 
                 densities[k] = systemDensity;
                 centerRadii[k] = systemCenterRadius;
@@ -137,6 +149,7 @@ public class GalaxyGenerator : MonoBehaviour
                 ringWidths[k] = systemRingWidth;
                 collisionDistances[k] = systemCollisionDistance;
                 radii[k] = systemRadius;
+                ringIntervals[k] = ringIntervalMultiplier;
             }
             //For each system ring
             for (int i = 0; i < systemRingCount; i++)
@@ -185,6 +198,7 @@ public class GalaxyGenerator : MonoBehaviour
                         yield return null;
                     }
                 }
+                
             }
             //Get all current systems within scene
             systems = GetAllGalaxySystems();
@@ -203,6 +217,10 @@ public class GalaxyGenerator : MonoBehaviour
                 //Get all current systems within scene after some have been removed
                 systems = GetAllGalaxySystems();
             }
+
+            //Calculate number of systems
+            numberOfSystemsGenerated = systems.Length;
+            numberOfSystems[k] = numberOfSystemsGenerated;
 
             //For every system.
             for (int i = 0; i < systems.Length; i++)
@@ -259,7 +277,7 @@ public class GalaxyGenerator : MonoBehaviour
                 //print data to CSV only when on last generation
                 if(printGenerationDataToCSV == true && numberOfTimesToGenerate == k + 1)
                 {
-                    int numberOfHeadings = 7;
+                    int numberOfHeadings = 9;
                     string[,] data = new string[numberOfHeadings, numberOfTimesToGenerate];
                     string[] headings = new string[numberOfHeadings];
 
@@ -271,6 +289,8 @@ public class GalaxyGenerator : MonoBehaviour
                     headings[4] = "Ring Width";
                     headings[5] = "Collision Dist";
                     headings[6] = "Radius";
+                    headings[7] = "Ring Intervals";
+                    headings[8] = "System Count";
 
                     //Data for each heading
                     for (int i = 0; i < numberOfTimesToGenerate; i++)
@@ -282,8 +302,10 @@ public class GalaxyGenerator : MonoBehaviour
                         data[4, i] = ringWidths[i].ToString("n4");
                         data[5, i] = collisionDistances[i].ToString("n4");
                         data[6, i] = radii[i].ToString();
+                        data[7, i] = ringIntervals[i].ToString("n4");
+                        data[8, i] = numberOfSystems[i].ToString();
                     }
-                    Utilities.WriteToCSV("GenerationTime", headings, data);
+                    Utilities.WriteToCSV("GenerationData", headings, data);
                 }
                 //Repeatedly destroy galaxy and recreate until the number of generations is met
                 if (repeatGenerations == true)
@@ -291,7 +313,6 @@ public class GalaxyGenerator : MonoBehaviour
                     //Only destroy if not last galaxy to generate.
                     if (numberOfTimesToGenerate != k + 1)
                     {
-                        currentGeneration++;
                         for (int i = 0; i < systemRingCount; i++)
                         {
                             //timings[i] = Time.time - startTime;
@@ -299,6 +320,7 @@ public class GalaxyGenerator : MonoBehaviour
                         }
                     }
                 }
+                currentGeneration++;
             }
         }
     }

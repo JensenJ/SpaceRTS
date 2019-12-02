@@ -151,11 +151,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemDensity: 0.25
   systemRadius: 150
+  ringIntervalMultiplier: 25
   systemCenterRadius: 0
   systemRingCount: 6
   systemCollisionDistance: 1.25
   systemCollisions: 1
   randomGeneration: 1
+  numberOfSystemsGenerated: 0
   systemEquidistant: 0
   systemRingWidth: 3
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
