@@ -164,7 +164,7 @@ MonoBehaviour:
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
     type: 3}
-  systemResources: 1
+  systemResources: 0
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   systemResourcesData:
   - name: Fuel
@@ -185,12 +185,14 @@ MonoBehaviour:
     currentNodeCount: 0
     nodeResourceType: 3
     nodeColour: {r: 1, g: 0, b: 0, a: 1}
+  systemFactions: 1
+  numberOfFactions: 20
   debugMode: 1
   coroutineGenerateYieldIntervals: 500
   coroutineCollisionYieldIntervals: 30
   displayGenerationTime: 1
-  printGenerationDataToCSV: 1
-  repeatGenerations: 1
+  printGenerationDataToCSV: 0
+  repeatGenerations: 0
   numberOfTimesToGenerate: 50
   currentGeneration: 0
 --- !u!4 &6192557

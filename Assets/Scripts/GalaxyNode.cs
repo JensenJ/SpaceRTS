@@ -7,22 +7,15 @@ public class GalaxyNode : MonoBehaviour
     public enum NodeType {
         None,
         Resource,
-        Shop
-    }
-
-    public enum NodeResource
-    {
-        None,
-        Energy,
-        Fuel,
-        Minerals
+        Planet,
+        Station
     }
 
     [SerializeField]
     private NodeType type = NodeType.None;
 
     [SerializeField]
-    private NodeResource resource = NodeResource.None;
+    private Resources.ResourceType resourceType = Resources.ResourceType.None;
 
     [SerializeField]
     int currentResource = 10;
@@ -45,20 +38,11 @@ public class GalaxyNode : MonoBehaviour
     public void SetNodeType(NodeType m_type)
     {
         type = m_type;
-
-        switch (type) {
-            case NodeType.None:
-                break;
-            case NodeType.Resource:
-                break;
-            case NodeType.Shop:
-                break;
-        }
     }
 
-    public void SetResourceType(NodeResource m_resource, int resourceAmount)
+    public void SetResourceType(Resources.ResourceType m_resource, int resourceAmount)
     {
-        resource = m_resource;
+        resourceType = m_resource;
         currentResource = resourceAmount;
     }
 
@@ -75,9 +59,9 @@ public class GalaxyNode : MonoBehaviour
         renderer.color = resourceColor;
     }
 
-    public NodeResource GetResourceType()
+    public Resources.ResourceType GetResourceType()
     {
-        return resource;
+        return resourceType;
     }
     public NodeType GetNodeType()
     {

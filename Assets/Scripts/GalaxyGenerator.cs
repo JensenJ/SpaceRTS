@@ -57,7 +57,13 @@ public class GalaxyGenerator : MonoBehaviour
     Color defaultColor = Color.white;
 
     [SerializeField]
-    public GalaxyNodeResource[] systemResourcesData;
+    public GalaxyGenerationResourceData[] systemResourcesData;
+
+    [Header("System Faction Generation Setting:")]
+    [SerializeField]
+    bool systemFactions = true;
+    [SerializeField]
+    int numberOfFactions = 8;
 
     IEnumerator currentGenerateCoroutine;
     float startTime;
@@ -253,6 +259,19 @@ public class GalaxyGenerator : MonoBehaviour
                     GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour, systemResourcesData[i].resourceRichnessMultiplier);
                 }
             }
+
+            if (systemFactions == true)
+            {
+                FactionData[] factions = Factions.CreateFactions(numberOfFactions, systems);
+                for (int i = 0; i < factions.Length; i++)
+                {
+                    GalaxyNode startSystem = factions[i].homeSystem;
+                    Color factionColour = factions[i].factionColour;
+                    startSystem.SetOwningFaction(i, factionColour);
+                    startSystem.SetNodeType(GalaxyNode.NodeType.Planet);
+                }
+            }
+
             //Calculate time taken
             timings[k] = Time.time - startTime;
             if (debugMode == true)
@@ -353,7 +372,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Determines which nodes should be resource nodes
-    void GenerateResourceNodes(int count, GalaxyNode.NodeResource resourceType, Color nodeColour, float resourceRichness)
+    void GenerateResourceNodes(int count, Resources.ResourceType resourceType, Color nodeColour, float resourceRichness)
     {
         //Repeat for the number of nodes that are designated as the nodetype
         for (int j = 0; j < count; j++)
@@ -386,17 +405,4 @@ public class GalaxyGenerator : MonoBehaviour
     {
         return GameObject.FindGameObjectsWithTag("GalaxySystem");
     }
-}
-
-[System.Serializable]
-public struct GalaxyNodeResource
-{
-    public string name;
-    [Range(0.1f, 4.0f)]
-    public float resourceRichnessMultiplier;
-    [Range(0, 100)]
-    public float resourcePercentage;
-    public int currentNodeCount;
-    public GalaxyNode.NodeResource nodeResourceType;
-    public Color nodeColour;
 }
