@@ -165,31 +165,31 @@ MonoBehaviour:
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
     type: 3}
   systemResources: 1
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
   systemResourcesData:
   - name: Fuel
     resourceRichnessMultiplier: 1
     minProductionRate: 14
     maxProductionRate: 40
-    resourcePercentage: 12
+    resourcePercentage: 18.3
     currentNodeCount: 0
     nodeResourceType: 2
   - name: Energy
     resourceRichnessMultiplier: 1
     minProductionRate: 14
     maxProductionRate: 41
-    resourcePercentage: 16
+    resourcePercentage: 34.5
     currentNodeCount: 0
     nodeResourceType: 1
   - name: Minerals
     resourceRichnessMultiplier: 1
     minProductionRate: 10
     maxProductionRate: 33
-    resourcePercentage: 11
+    resourcePercentage: 26
     currentNodeCount: 0
     nodeResourceType: 3
   systemFactions: 1
-  numberOfFactions: 20
+  numberOfFactions: 3
+  factions: []
   debugMode: 1
   coroutineGenerateYieldIntervals: 500
   coroutineCollisionYieldIntervals: 30
@@ -290,7 +290,7 @@ SpriteRenderer:
   m_Size: {x: 1.28, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &735034768

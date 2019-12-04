@@ -61,9 +61,8 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int numberOfFactions = 8;
 
-    IEnumerator currentGenerateCoroutine;
-    float startTime;
-
+    [SerializeField]
+    FactionData[] factions;
     //Debug settings
     [Header("Debug: ")]
     [SerializeField]
@@ -94,6 +93,9 @@ public class GalaxyGenerator : MonoBehaviour
     float[] radii;
     int[] numberOfSystems;
     float[] ringIntervals;
+
+    IEnumerator currentGenerateCoroutine;
+    float startTime;
 
     // Start is called before the first frame update
     void Start()
@@ -242,16 +244,8 @@ public class GalaxyGenerator : MonoBehaviour
             if (systemResources == true)
             {
                 //Prevents infinite loop
-                float totalPercentage = 0;
                 for (int i = 0; i < systemResourcesData.Length; i++)
                 {
-                    totalPercentage += systemResourcesData[i].resourcePercentage;
-                    if(totalPercentage > 100)
-                    {
-                        Debug.LogError("Galaxy Resource Generation Failed: total percentages exceed 100%");
-                        yield break;
-                    }
-
                     //Generating resource data
                     systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
                     GenerateResourceNodes(systemResourcesData[i]);
@@ -262,14 +256,7 @@ public class GalaxyGenerator : MonoBehaviour
             if (systemFactions == true)
             {
                 //Create faction starting systems.
-                FactionData[] factions = Factions.CreateFactions(numberOfFactions, systems);
-                for (int i = 0; i < factions.Length; i++)
-                {
-                    GalaxyNode startSystem = factions[i].homeSystem;
-                    Color factionColour = factions[i].factionColour;
-                    startSystem.SetOwningFaction(i, factionColour);
-                    startSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
-                }
+                factions = Factions.CreateFactions(numberOfFactions, systems);
             }
 
             //Calculate time taken

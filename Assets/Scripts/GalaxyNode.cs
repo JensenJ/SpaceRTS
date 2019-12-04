@@ -56,11 +56,12 @@ public class GalaxyNode : MonoBehaviour
     }
 
     //Getters and Setters
-    public void SetOwningFaction(int factionID, Color factionColour)
+    public void SetOwningFaction(int factionID)
     {
         owningFactionID = factionID;
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        renderer.color = factionColour;
+        FactionData data = Factions.GetFactionData(factionID);
+        renderer.color = data.factionColour;
     }
 
     public GalaxyNodeResourceData[] GetResourcesData()

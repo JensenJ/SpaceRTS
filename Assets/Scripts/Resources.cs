@@ -48,6 +48,7 @@ public struct GalaxyNodeResourceData
     public Resources.ResourceType resourceType;
     public int totalResource;
     public int productionRate;
+    public bool isEnabled;
 }
 
 //Data for the faction covering all resources.

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Factions : MonoBehaviour
+public static class Factions
 {
     static int numberOfFactions;
     static FactionData[] factions;
@@ -21,11 +21,14 @@ public class Factions : MonoBehaviour
             //Home / Starting system
             GalaxyNode homeSystem = systems[Random.Range(0, systems.Length)].GetComponent<GalaxyNode>();
             factions[i].homeSystem = homeSystem;
+            homeSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
+            homeSystem.SetOwningFaction(i);
 
             //Assigning Galaxy node arrays
             factions[i].exploredSystems = new List<GalaxyNode>();
             factions[i].ownedSystems = new List<GalaxyNode>();
 
+            //Add homesystem to explored and owned systems
             factions[i].exploredSystems.Add(homeSystem);
             factions[i].ownedSystems.Add(homeSystem);
 
@@ -36,28 +39,98 @@ public class Factions : MonoBehaviour
             factions[i].resourceData[0].resourceType = Resources.ResourceType.Energy;
             factions[i].resourceData[0].resourceStored = 1000;
             factions[i].resourceData[0].resourceInflux = 10;
-
             //Fuel allocation
             factions[i].resourceData[1].resourceType = Resources.ResourceType.Fuel;
             factions[i].resourceData[1].resourceStored = 1000;
-            factions[i].resourceData[0].resourceInflux = 10;
+            factions[i].resourceData[1].resourceInflux = 10;
             //Minerals allocation
             factions[i].resourceData[2].resourceType = Resources.ResourceType.Minerals;
             factions[i].resourceData[2].resourceStored = 1000;
             factions[i].resourceData[2].resourceInflux = 10;
+            //Update resources
+            UpdateResourceInflux(i, homeSystem);
         }
         return factions;
     }
 
     //Sets the faction name
-    public static bool SetFactionName(int factionID, string newName)
+    public static void SetFactionName(int factionID, string newName)
     {
-        if(factionID > factions.Length || factionID < 0)
+        if(factionID < factions.Length && factionID >= 0)
         {
-            return false;
+            factions[factionID].factionName = newName;
         }
-        factions[factionID].factionName = newName;
-        return true;
+    }
+    //Sets the faction colour
+    public static void SetFactionColour(int factionID, Color factionColor)
+    {
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            factions[factionID].factionColour = factionColor;
+        }
+    }
+
+    //Adds an explored system to the list
+    public static void AddExploredSystem(int factionID, GalaxyNode newExploredSystem)
+    {
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            factions[factionID].exploredSystems.Add(newExploredSystem);
+        }
+    }
+
+    //Adds an owned system to the list
+    public static void AddControlledSystem(int factionID, GalaxyNode newControlledSystem)
+    {
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            factions[factionID].ownedSystems.Add(newControlledSystem);
+            newControlledSystem.SetOwningFaction(factionID);
+            UpdateResourceInflux(factionID, newControlledSystem);
+        }
+    }
+
+    //Update the amount of a resource a faction collects for a period of time.
+    public static void UpdateResourceInflux(int factionID, GalaxyNode resourceNode)
+    {
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            GalaxyNodeResourceData[] resources = resourceNode.GetResourcesData();
+            //For every resource in the node
+            for (int i = 0; i < resources.Length; i++)
+            {
+                //Get faction data
+                FactionData data = GetFactionData(factionID);
+                //For every resource the faction can collect
+                for (int j = 0; j < data.resourceData.Length; j++)
+                {
+                    if (data.resourceData[j].resourceType == resources[i].resourceType)
+                    {
+                        //If the producing resource node is enabled (has the faction built a mining rig? etc..)
+                        if (resources[i].isEnabled)
+                        {
+                            //Add to resource influx
+                            data.resourceData[j].resourceInflux += resources[i].productionRate;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Get Faction Data
+    public static FactionData GetFactionData(int factionID)
+    {
+        //If faction ID is valid.
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            return factions[factionID];
+        }
+        else
+        {
+            //Return player faction if id is invalid.
+            return factions[0];
+        }
     }
 }
 
