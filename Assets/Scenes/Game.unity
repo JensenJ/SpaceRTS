@@ -164,27 +164,30 @@ MonoBehaviour:
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
     type: 3}
-  systemResources: 0
+  systemResources: 1
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   systemResourcesData:
   - name: Fuel
     resourceRichnessMultiplier: 1
+    minProductionRate: 14
+    maxProductionRate: 40
     resourcePercentage: 12
     currentNodeCount: 0
     nodeResourceType: 2
-    nodeColour: {r: 1, g: 0.5506037, b: 0, a: 1}
   - name: Energy
     resourceRichnessMultiplier: 1
+    minProductionRate: 14
+    maxProductionRate: 41
     resourcePercentage: 16
     currentNodeCount: 0
     nodeResourceType: 1
-    nodeColour: {r: 1, g: 0.8735534, b: 0, a: 1}
   - name: Minerals
     resourceRichnessMultiplier: 1
+    minProductionRate: 10
+    maxProductionRate: 33
     resourcePercentage: 11
     currentNodeCount: 0
     nodeResourceType: 3
-    nodeColour: {r: 1, g: 0, b: 0, a: 1}
   systemFactions: 1
   numberOfFactions: 20
   debugMode: 1

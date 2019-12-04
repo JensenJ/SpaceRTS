@@ -47,14 +47,10 @@ public class GalaxyGenerator : MonoBehaviour
 
     GameObject[] systems;
 
-    //Node Colours
+    //Resource Settings
     [Header("System Resource Generation Settings: ")]
     [SerializeField]
     bool systemResources = true;
-
-    [Space(10)]
-    [SerializeField]
-    Color defaultColor = Color.white;
 
     [SerializeField]
     public GalaxyGenerationResourceData[] systemResourcesData;
@@ -68,6 +64,7 @@ public class GalaxyGenerator : MonoBehaviour
     IEnumerator currentGenerateCoroutine;
     float startTime;
 
+    //Debug settings
     [Header("Debug: ")]
     [SerializeField]
     bool debugMode = false;
@@ -87,6 +84,7 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int currentGeneration = 0;
 
+    //Data arrays
     float[] timings;
     float[] densities;
     float[] centerRadii;
@@ -106,7 +104,7 @@ public class GalaxyGenerator : MonoBehaviour
         }
 
 
-        //Initialise diagnostics arrays
+        //Initialise data arrays for CSV
         timings = new float[numberOfTimesToGenerate];
         densities = new float[numberOfTimesToGenerate];
         centerRadii = new float[numberOfTimesToGenerate];
@@ -134,6 +132,7 @@ public class GalaxyGenerator : MonoBehaviour
         
     }
 
+    //Coroutine to spawn the galaxy, coroutine needed otherwise performance is awful.
     IEnumerator SpawnGalaxy()
     {
         for (int k = 0; k < numberOfTimesToGenerate; k++)
@@ -234,8 +233,6 @@ public class GalaxyGenerator : MonoBehaviour
                 if (systems[i] != null)
                 {
                     GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
-                    node.SetNodeType(GalaxyNode.NodeType.None);
-                    node.SetResourceColor(defaultColor);
                     node.name = "Node " + i;
 
                 }
@@ -255,20 +252,23 @@ public class GalaxyGenerator : MonoBehaviour
                         yield break;
                     }
 
+                    //Generating resource data
                     systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
-                    GenerateResourceNodes(systemResourcesData[i].currentNodeCount, systemResourcesData[i].nodeResourceType, systemResourcesData[i].nodeColour, systemResourcesData[i].resourceRichnessMultiplier);
+                    GenerateResourceNodes(systemResourcesData[i]);
                 }
             }
 
+            //If factions are enabled.
             if (systemFactions == true)
             {
+                //Create faction starting systems.
                 FactionData[] factions = Factions.CreateFactions(numberOfFactions, systems);
                 for (int i = 0; i < factions.Length; i++)
                 {
                     GalaxyNode startSystem = factions[i].homeSystem;
                     Color factionColour = factions[i].factionColour;
                     startSystem.SetOwningFaction(i, factionColour);
-                    startSystem.SetNodeType(GalaxyNode.NodeType.Planet);
+                    startSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
                 }
             }
 
@@ -296,7 +296,7 @@ public class GalaxyGenerator : MonoBehaviour
                 //print data to CSV only when on last generation
                 if(printGenerationDataToCSV == true && numberOfTimesToGenerate == k + 1)
                 {
-                    int numberOfHeadings = 9;
+                    int numberOfHeadings = 13;
                     string[,] data = new string[numberOfHeadings, numberOfTimesToGenerate];
                     string[] headings = new string[numberOfHeadings];
 
@@ -310,6 +310,7 @@ public class GalaxyGenerator : MonoBehaviour
                     headings[6] = "Radius";
                     headings[7] = "Ring Intervals";
                     headings[8] = "System Count";
+                    headings[9] = "Faction Count";
 
                     //Data for each heading
                     for (int i = 0; i < numberOfTimesToGenerate; i++)
@@ -323,6 +324,7 @@ public class GalaxyGenerator : MonoBehaviour
                         data[6, i] = radii[i].ToString();
                         data[7, i] = ringIntervals[i].ToString("n4");
                         data[8, i] = numberOfSystems[i].ToString();
+                        data[9, i] = numberOfFactions.ToString();
                     }
                     Utilities.WriteToCSV("GenerationData", headings, data);
                 }
@@ -372,30 +374,19 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Determines which nodes should be resource nodes
-    void GenerateResourceNodes(int count, Resources.ResourceType resourceType, Color nodeColour, float resourceRichness)
+    void GenerateResourceNodes(GalaxyGenerationResourceData data)
     {
         //Repeat for the number of nodes that are designated as the nodetype
-        for (int j = 0; j < count; j++)
+        for (int j = 0; j < data.currentNodeCount; j++)
         {
             //Random node
             GalaxyNode node = systems[Random.Range(0, systems.Length)].GetComponent<GalaxyNode>();
             //Null pointer check
             if (node != null)
             {
-                //Check node is not another resource
-                if (node.GetNodeType() == GalaxyNode.NodeType.None)
-                {
-                    //Node settings
-                    node.SetResourceType(resourceType, Mathf.FloorToInt(resourceRichness * Random.Range(3.0f, 7.0f)));
-                    node.SetResourceColor(nodeColour);
-                    node.SetNodeType(GalaxyNode.NodeType.Resource);
-                    node.name = node.name + " (" + resourceType.ToString() + ")";
-                }
-                else
-                {
-                    //Keep repeating until node count fulfilled.
-                    j--;
-                }
+                //Node settings
+                node.AddResource(data.nodeResourceType, Mathf.FloorToInt(data.resourceRichnessMultiplier * Random.Range(3000.0f, 7000.0f)), Random.Range(data.minProductionRate, data.maxProductionRate));
+                node.name = node.name + " (" + data.nodeResourceType.ToString() + ")";
             }
         }
     }

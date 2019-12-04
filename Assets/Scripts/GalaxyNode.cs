@@ -1,27 +1,27 @@
-﻿using UnityEngine.UI;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GalaxyNode : MonoBehaviour
 {
 
-    public enum NodeType {
+    [SerializeField]
+    int owningFactionID = -1;
+
+    //Possible features that a system can have
+    public enum SystemFeatures {
         None,
         Resource,
         Planet,
         Station
     }
 
+    //Allows multiple galaxy features in a single system
     [SerializeField]
-    private NodeType type = NodeType.None;
+    private List<SystemFeatures> features = new List<SystemFeatures>();
 
     [SerializeField]
-    private Resources.ResourceType resourceType = Resources.ResourceType.None;
+    private List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
 
-    [SerializeField]
-    int currentResource = 10;
-
-    [SerializeField]
-    int owningFactionID = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -35,37 +35,41 @@ public class GalaxyNode : MonoBehaviour
 
     }
 
-    public void SetNodeType(NodeType m_type)
+    //Adding features and resources
+    public void AddSystemFeature(SystemFeatures m_feature)
     {
-        type = m_type;
+        features.Add(m_feature);
     }
 
-    public void SetResourceType(Resources.ResourceType m_resource, int resourceAmount)
+    //Add a resource to a node.
+    public void AddResource(Resources.ResourceType m_resource, int resourceAmount, int productionRate)
     {
-        resourceType = m_resource;
-        currentResource = resourceAmount;
+        AddSystemFeature(SystemFeatures.Resource);
+        GalaxyNodeResourceData resource = new GalaxyNodeResourceData
+        {
+            resourceType = m_resource,
+            totalResource = resourceAmount,
+            productionRate = productionRate
+        };
+
+        resources.Add(resource);
     }
 
+    //Getters and Setters
     public void SetOwningFaction(int factionID, Color factionColour)
     {
         owningFactionID = factionID;
-        SpriteRenderer renderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         renderer.color = factionColour;
     }
 
-    public void SetResourceColor(Color resourceColor)
+    public GalaxyNodeResourceData[] GetResourcesData()
     {
-        SpriteRenderer renderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        renderer.color = resourceColor;
+        return resources.ToArray();
     }
-
-    public Resources.ResourceType GetResourceType()
+    public SystemFeatures[] GetSystemFeatures()
     {
-        return resourceType;
-    }
-    public NodeType GetNodeType()
-    {
-        return type;
+        return features.ToArray();
     }
 
     public int GetOwningFactionID()

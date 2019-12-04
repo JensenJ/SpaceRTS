@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections;
 using UnityEngine;
 
 public class Factions : MonoBehaviour
@@ -7,6 +6,7 @@ public class Factions : MonoBehaviour
     static int numberOfFactions;
     static FactionData[] factions;
 
+    //Create faction data array randomly.
     public static FactionData[] CreateFactions(int numberOfFactionsToCreate, GameObject[] systems)
     {
         numberOfFactions = numberOfFactionsToCreate;
@@ -32,21 +32,24 @@ public class Factions : MonoBehaviour
             //Resource assigning
             factions[i].resourceData = new FactionResourceData[3];
 
-
             //Energy allocation
             factions[i].resourceData[0].resourceType = Resources.ResourceType.Energy;
-            factions[i].resourceData[0].amountStored = 1000;
+            factions[i].resourceData[0].resourceStored = 1000;
+            factions[i].resourceData[0].resourceInflux = 10;
 
             //Fuel allocation
             factions[i].resourceData[1].resourceType = Resources.ResourceType.Fuel;
-            factions[i].resourceData[1].amountStored = 1000;
+            factions[i].resourceData[1].resourceStored = 1000;
+            factions[i].resourceData[0].resourceInflux = 10;
             //Minerals allocation
             factions[i].resourceData[2].resourceType = Resources.ResourceType.Minerals;
-            factions[i].resourceData[2].amountStored = 1000;
+            factions[i].resourceData[2].resourceStored = 1000;
+            factions[i].resourceData[2].resourceInflux = 10;
         }
         return factions;
     }
 
+    //Sets the faction name
     public static bool SetFactionName(int factionID, string newName)
     {
         if(factionID > factions.Length || factionID < 0)
@@ -58,6 +61,7 @@ public class Factions : MonoBehaviour
     }
 }
 
+//Faction data struct
 [System.Serializable]
 public struct FactionData
 {

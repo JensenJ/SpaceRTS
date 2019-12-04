@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class Framerate : MonoBehaviour
 {
@@ -15,6 +11,7 @@ public class Framerate : MonoBehaviour
 
     void OnGUI()
     {
+        //Print framerate to screen
         int w = Screen.width, h = Screen.height;
 
         GUIStyle style = new GUIStyle();
