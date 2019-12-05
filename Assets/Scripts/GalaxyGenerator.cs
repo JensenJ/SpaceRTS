@@ -19,7 +19,7 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0.0f, 50.0f)]
     float systemCenterRadius = 25.0f;
     [SerializeField]
-    [Range(0, 8)]
+    [Range(1, 8)]
     int systemRingCount = 4;
     [SerializeField]
     [Range(0.01f, 5.0f)]
@@ -59,6 +59,7 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     bool systemFactions = true;
     [SerializeField]
+    [Range(1, 50)]
     int numberOfFactions = 8;
 
     [SerializeField]
@@ -145,7 +146,7 @@ public class GalaxyGenerator : MonoBehaviour
             {
                 systemDensity = Random.Range(0.2f, 0.25f);
                 systemCenterRadius = Random.Range(0.0f, 25.0f);
-                systemRingCount = Random.Range(4, 6);
+                systemRingCount = Random.Range(4, 7);
                 systemRingWidth = Random.Range(1.25f, 3.0f);
                 systemCollisionDistance = Random.Range(1.5f, 2.25f);
                 systemRadius = systemRingCount * ringIntervalMultiplier;

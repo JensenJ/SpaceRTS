@@ -149,12 +149,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  systemDensity: 0.25
+  systemDensity: 0.412
   systemRadius: 150
   ringIntervalMultiplier: 25
   systemCenterRadius: 0
-  systemRingCount: 6
-  systemCollisionDistance: 1.25
+  systemRingCount: 4
+  systemCollisionDistance: 1.5
   systemCollisions: 1
   randomGeneration: 1
   numberOfSystemsGenerated: 0
@@ -188,7 +188,7 @@ MonoBehaviour:
     currentNodeCount: 0
     nodeResourceType: 3
   systemFactions: 1
-  numberOfFactions: 3
+  numberOfFactions: 50
   factions: []
   debugMode: 1
   coroutineGenerateYieldIntervals: 500

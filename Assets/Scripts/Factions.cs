@@ -11,6 +11,8 @@ public static class Factions
     {
         numberOfFactions = numberOfFactionsToCreate;
         factions = new FactionData[numberOfFactions];
+        GameObject[] homeSystems = new GameObject[numberOfFactions];
+        //For every faction to create
         for (int i = 0; i < numberOfFactionsToCreate; i++)
         {
             //Faction identifiers
@@ -20,35 +22,57 @@ public static class Factions
 
             //Home / Starting system
             GalaxyNode homeSystem = systems[Random.Range(0, systems.Length)].GetComponent<GalaxyNode>();
-            factions[i].homeSystem = homeSystem;
-            homeSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
-            homeSystem.SetOwningFaction(i);
 
-            //Assigning Galaxy node arrays
-            factions[i].exploredSystems = new List<GalaxyNode>();
-            factions[i].ownedSystems = new List<GalaxyNode>();
+            //Validating faction system, prevents positioning multiple factions inside same system.
+            bool valid = true;
+            for (int j = 0; j < homeSystems.Length; j++)
+            {
+                //If the system is already in the array
+                if(homeSystems[j] == homeSystem.gameObject)
+                {
+                    //It is not valid
+                    valid = false;
+                }
+            }
 
-            //Add homesystem to explored and owned systems
-            factions[i].exploredSystems.Add(homeSystem);
-            factions[i].ownedSystems.Add(homeSystem);
+            //If positioning is valid
+            if (valid == true)
+            {
+                factions[i].homeSystem = homeSystem;
+                homeSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
+                homeSystem.SetOwningFaction(i);
+                homeSystems[i] = homeSystem.gameObject;
 
-            //Resource assigning
-            factions[i].resourceData = new FactionResourceData[3];
+                //Assigning Galaxy node arrays
+                factions[i].exploredSystems = new List<GalaxyNode>();
+                factions[i].ownedSystems = new List<GalaxyNode>();
 
-            //Energy allocation
-            factions[i].resourceData[0].resourceType = Resources.ResourceType.Energy;
-            factions[i].resourceData[0].resourceStored = 1000;
-            factions[i].resourceData[0].resourceInflux = 10;
-            //Fuel allocation
-            factions[i].resourceData[1].resourceType = Resources.ResourceType.Fuel;
-            factions[i].resourceData[1].resourceStored = 1000;
-            factions[i].resourceData[1].resourceInflux = 10;
-            //Minerals allocation
-            factions[i].resourceData[2].resourceType = Resources.ResourceType.Minerals;
-            factions[i].resourceData[2].resourceStored = 1000;
-            factions[i].resourceData[2].resourceInflux = 10;
-            //Update resources
-            UpdateResourceInflux(i, homeSystem);
+                //Add homesystem to explored and owned systems
+                factions[i].exploredSystems.Add(homeSystem);
+                factions[i].ownedSystems.Add(homeSystem);
+
+                //Resource assigning
+                factions[i].resourceData = new FactionResourceData[3];
+
+                //Energy allocation
+                factions[i].resourceData[0].resourceType = Resources.ResourceType.Energy;
+                factions[i].resourceData[0].resourceStored = 1000;
+                factions[i].resourceData[0].resourceInflux = 10;
+                //Fuel allocation
+                factions[i].resourceData[1].resourceType = Resources.ResourceType.Fuel;
+                factions[i].resourceData[1].resourceStored = 1000;
+                factions[i].resourceData[1].resourceInflux = 10;
+                //Minerals allocation
+                factions[i].resourceData[2].resourceType = Resources.ResourceType.Minerals;
+                factions[i].resourceData[2].resourceStored = 1000;
+                factions[i].resourceData[2].resourceInflux = 10;
+                //Update resources
+                UpdateResourceInflux(i, homeSystem);
+            }
+            else
+            {
+                i--;
+            }
         }
         return factions;
     }
@@ -91,7 +115,7 @@ public static class Factions
     }
 
     //Update the amount of a resource a faction collects for a period of time.
-    public static void UpdateResourceInflux(int factionID, GalaxyNode resourceNode)
+    private static void UpdateResourceInflux(int factionID, GalaxyNode resourceNode)
     {
         if (factionID < factions.Length && factionID >= 0)
         {
