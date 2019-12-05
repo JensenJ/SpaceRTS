@@ -188,7 +188,7 @@ MonoBehaviour:
     currentNodeCount: 0
     nodeResourceType: 3
   systemFactions: 1
-  numberOfFactions: 50
+  numberOfFactions: 20
   factions: []
   debugMode: 1
   coroutineGenerateYieldIntervals: 500
@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 735034771}
   - component: {fileID: 735034770}
   - component: {fileID: 735034769}
+  - component: {fileID: 735034772}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -376,6 +377,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &735034772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735034768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d43abb3d5750607408b44cf53515beab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panSpeed: 120
+  panBorderThickness: 10
+  panLimit: {x: 150, y: 150}
+  zoomSpeed: 40
+  minZoom: 30
+  maxZoom: 150
+  cam: {fileID: 735034770}
 --- !u!1 &1082351809
 GameObject:
   m_ObjectHideFlags: 0
