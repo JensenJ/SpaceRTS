@@ -10,14 +10,14 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]
     float panBorderThickness = 10f;
     [SerializeField]
-    Vector2 panLimit;
+    public float panLimit = 150.0f;
     [SerializeField]
     float zoomSpeed = 40f;
 
     [SerializeField]
-    float minZoom = 30.0f;
+    public float minZoom = 30.0f;
     [SerializeField]
-    float maxZoom = 200.0f;
+    public float maxZoom = 200.0f;
 
     [SerializeField]
     Camera cam;
@@ -30,6 +30,16 @@ public class CameraMovement : MonoBehaviour
         {
             cam = GetComponent<Camera>();
         }
+    }
+
+    //Camera setup
+    public void InitializeCameraSettings(Vector3 m_startingPosition, float m_panLimit, float m_minZoom, float m_maxZoom)
+    {
+        transform.position = m_startingPosition;
+        cam.orthographicSize = m_minZoom;
+        panLimit = m_panLimit;
+        minZoom = m_minZoom;
+        maxZoom = m_maxZoom;
     }
 
     // Update is called once per frame
@@ -55,8 +65,8 @@ public class CameraMovement : MonoBehaviour
         }
 
         //Camera clamping and assignment
-        currentPos.x = Mathf.Clamp(currentPos.x, -panLimit.x, panLimit.x);
-        currentPos.y = Mathf.Clamp(currentPos.y, -panLimit.y, panLimit.y);
+        currentPos.x = Mathf.Clamp(currentPos.x, -panLimit, panLimit);
+        currentPos.y = Mathf.Clamp(currentPos.y, -panLimit, panLimit);
         transform.position = currentPos;
 
         //Camera scrolling

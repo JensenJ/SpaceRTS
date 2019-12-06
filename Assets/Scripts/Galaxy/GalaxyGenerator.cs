@@ -97,6 +97,8 @@ public class GalaxyGenerator : MonoBehaviour
 
     IEnumerator currentGenerateCoroutine;
     float startTime;
+    [SerializeField]
+    Camera playerCamera;
 
     // Start is called before the first frame update
     void Start()
@@ -105,7 +107,6 @@ public class GalaxyGenerator : MonoBehaviour
         {
             numberOfTimesToGenerate = 1;
         }
-
 
         //Initialise data arrays for CSV
         timings = new float[numberOfTimesToGenerate];
@@ -142,6 +143,8 @@ public class GalaxyGenerator : MonoBehaviour
         {
             numberOfSystemsGenerated = 0;
             startTime = Time.time;
+
+            //If random generation
             if (randomGeneration == true)
             {
                 systemDensity = Random.Range(0.2f, 0.25f);
@@ -258,6 +261,10 @@ public class GalaxyGenerator : MonoBehaviour
             {
                 //Create faction starting systems.
                 factions = Factions.CreateFactions(numberOfFactions, systems);
+                float x = factions[0].homeSystem.transform.position.x;
+                float y = factions[0].homeSystem.transform.position.y;
+
+                playerCamera.GetComponent<CameraMovement>().InitializeCameraSettings(new Vector3(x, y, -10), systemRadius, 15.0f, systemRadius);
             }
 
             //Calculate time taken

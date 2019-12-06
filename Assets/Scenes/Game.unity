@@ -198,6 +198,7 @@ MonoBehaviour:
   repeatGenerations: 0
   numberOfTimesToGenerate: 50
   currentGeneration: 0
+  playerCamera: {fileID: 735034770}
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0
