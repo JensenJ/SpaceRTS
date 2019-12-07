@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6171296739044736915}
   - component: {fileID: 6636592916230482077}
   - component: {fileID: 8066694909820419857}
+  - component: {fileID: 815198577896277128}
   m_Layer: 0
   m_Name: System
   m_TagString: GalaxySystem
@@ -44,9 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3558b7c3f16e93243bbf942567af7e36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owningFactionID: 0
   features: 
   resources: []
-  owningFactionID: 0
 --- !u!212 &8066694909820419857
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -96,3 +97,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &815198577896277128
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2564935123665342088}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5

@@ -306,6 +306,7 @@ GameObject:
   - component: {fileID: 735034770}
   - component: {fileID: 735034769}
   - component: {fileID: 735034772}
+  - component: {fileID: 735034773}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -392,11 +393,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panSpeed: 120
   panBorderThickness: 10
-  panLimit: {x: 150, y: 150}
+  panLimit: 150
   zoomSpeed: 40
   minZoom: 30
   maxZoom: 150
   cam: {fileID: 735034770}
+--- !u!114 &735034773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735034768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bcdf3a0ac7fc404791adb062f134eb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1082351809
 GameObject:
   m_ObjectHideFlags: 0

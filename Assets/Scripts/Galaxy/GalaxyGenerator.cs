@@ -98,7 +98,7 @@ public class GalaxyGenerator : MonoBehaviour
     IEnumerator currentGenerateCoroutine;
     float startTime;
     [SerializeField]
-    Camera playerCamera;
+    Camera playerCamera = null;
 
     // Start is called before the first frame update
     void Start()
@@ -331,7 +331,6 @@ public class GalaxyGenerator : MonoBehaviour
                     {
                         for (int i = 0; i < systemRingCount; i++)
                         {
-                            //timings[i] = Time.time - startTime;
                             Destroy(transform.GetChild(i + 1).gameObject);
                         }
                     }
