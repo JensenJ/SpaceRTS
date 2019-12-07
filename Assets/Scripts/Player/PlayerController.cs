@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
             //If something was hit
             if(hit.collider != null)
             {
+                //Disable info panel on last selected node
                 if(previouslySelectedNode != null)
                 {
                     previouslySelectedNode.DisableInfoPanel();

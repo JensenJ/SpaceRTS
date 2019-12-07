@@ -72,6 +72,12 @@ public class GalaxyNode : MonoBehaviour
     public void UpdateNodeUI()
     {
         transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = gameObject.name;
+        for (int i = 0; i < resourceContentPanel.transform.childCount; i++)
+        {
+            //Resource panel
+            resourceContentPanel.transform.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>().text = resources[i].resourceType.ToString();
+            resourceContentPanel.transform.GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>().text = resources[i].totalResource.ToString() + " (" + resources[i].productionRate + ")";
+        }
     }
 
     //Adding features and resources
