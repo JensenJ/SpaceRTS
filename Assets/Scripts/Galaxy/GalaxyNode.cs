@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GalaxyNode : MonoBehaviour
 {
 
     [SerializeField]
     int owningFactionID = -1;
+
+    [SerializeField]
+    GameObject resourceContentPanel = null;
+
+    GameObject infoPanel = null;
 
     //Possible features that a system can have
     public enum SystemFeatures {
@@ -15,13 +21,13 @@ public class GalaxyNode : MonoBehaviour
         Station
     }
 
+
     //Allows multiple galaxy features in a single system
     [SerializeField]
     private List<SystemFeatures> features = new List<SystemFeatures>();
 
     [SerializeField]
     private List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
-
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +39,39 @@ public class GalaxyNode : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void CreateNodeUI(GameObject nodePrefab, GameObject resourcePrefab)
+    {
+        //Spawn info panel
+        infoPanel = Instantiate(nodePrefab, transform.position, Quaternion.identity, transform);
+        resourceContentPanel = infoPanel.transform.GetChild(0).GetChild(1).GetChild(0).gameObject;
+        for (int i = 0; i < resources.Count; i++)
+        {
+            Instantiate(resourcePrefab, transform.position, Quaternion.identity, resourceContentPanel.transform);
+        }
+        DisableInfoPanel();
+        UpdateNodeUI();
+    }
+
+    //Info panel functions
+    public void EnableInfoPanel()
+    {
+        infoPanel.SetActive(true);
+    }
+    public void DisableInfoPanel()
+    {
+        infoPanel.SetActive(false);
+    }
+
+    public bool IsInfoPanelActive()
+    {
+        return infoPanel.activeSelf;
+    }
+
+    public void UpdateNodeUI()
+    {
+        transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = gameObject.name;
     }
 
     //Adding features and resources

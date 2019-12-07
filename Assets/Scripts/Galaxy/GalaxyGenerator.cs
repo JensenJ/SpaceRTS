@@ -64,6 +64,13 @@ public class GalaxyGenerator : MonoBehaviour
 
     [SerializeField]
     FactionData[] factions;
+
+    [Header("System Misc settings: ")]
+    [SerializeField]
+    GameObject nodeUIPrefab = null;
+    [SerializeField]
+    GameObject nodeResourceInfoUI = null;
+
     //Debug settings
     [Header("Debug: ")]
     [SerializeField]
@@ -233,26 +240,30 @@ public class GalaxyGenerator : MonoBehaviour
             numberOfSystemsGenerated = systems.Length;
             numberOfSystems[k] = numberOfSystemsGenerated;
 
-            //For every system.
-            for (int i = 0; i < systems.Length; i++)
-            {
-                if (systems[i] != null)
-                {
-                    GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
-                    node.name = "Node " + i;
-
-                }
-            }
-
             //If resources are enabled
             if (systemResources == true)
             {
-                //Prevents infinite loop
+                //For every resource in galaxy gen data
                 for (int i = 0; i < systemResourcesData.Length; i++)
                 {
                     //Generating resource data
                     systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
                     GenerateResourceNodes(systemResourcesData[i]);
+                }
+            }
+
+            //For every system after resource generation
+            for (int i = 0; i < systems.Length; i++)
+            {
+                if(systems[i] != null)
+                {
+                    GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
+                    node.name = "Node " + i;
+                    node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
+                    if(i % coroutineCollisionYieldIntervals == 0)
+                    {
+                        yield return null;
+                    }
                 }
             }
 
@@ -378,9 +389,8 @@ public class GalaxyGenerator : MonoBehaviour
             //Null pointer check
             if (node != null)
             {
-                //Node settings
+                //Node resource addition
                 node.AddResource(data.nodeResourceType, Mathf.FloorToInt(data.resourceRichnessMultiplier * Random.Range(3000.0f, 7000.0f)), Random.Range(data.minProductionRate, data.maxProductionRate));
-                node.name = node.name + " (" + data.nodeResourceType.ToString() + ")";
             }
         }
     }

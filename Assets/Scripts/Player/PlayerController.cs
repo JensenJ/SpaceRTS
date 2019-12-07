@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     int playerFactionID = 0;
+    GalaxyNode currentlySelectedNode = null;
+    GalaxyNode previouslySelectedNode = null;
 
     // Start is called before the first frame update
     void Start()
@@ -27,13 +29,22 @@ public class PlayerController : MonoBehaviour
             //If something was hit
             if(hit.collider != null)
             {
-                Debug.Log(hit.transform.name);
-                //Get node data
-                GalaxyNode node = hit.transform.gameObject.GetComponent<GalaxyNode>();
-                if(node != null)
+                if(previouslySelectedNode != null)
                 {
+                    previouslySelectedNode.DisableInfoPanel();
+                }
+                //Get node data
+                currentlySelectedNode = hit.transform.gameObject.GetComponent<GalaxyNode>();
+                if(currentlySelectedNode != null)
+                {
+                    previouslySelectedNode = currentlySelectedNode;
                     //Do something to node, e.g. get resource data.
-                    
+                    GalaxyNodeResourceData[] data = currentlySelectedNode.GetResourcesData();
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        Debug.Log(data[i].resourceType + " amount: " + data[i].totalResource + " at a rate of: " + data[i].productionRate);
+                    }
+                    currentlySelectedNode.EnableInfoPanel();
                 }
             }
         }
