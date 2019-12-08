@@ -43,8 +43,10 @@ public class PlayerController : MonoBehaviour
                     GalaxyNodeResourceData[] data = currentlySelectedNode.GetResourcesData();
                     for (int i = 0; i < data.Length; i++)
                     {
-                        Debug.Log(data[i].resourceType + " amount: " + data[i].totalResource + " at a rate of: " + data[i].productionRate);
+                        //Debug.Log(data[i].resourceType + " amount: " + data[i].totalResource + " at a rate of: " + data[i].productionRate);
+                        currentlySelectedNode.EnableResource(i);
                     }
+                    Factions.AddControlledSystem(0, currentlySelectedNode);
                     currentlySelectedNode.EnableInfoPanel();
                 }
             }

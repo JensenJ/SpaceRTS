@@ -93,12 +93,27 @@ public class GalaxyNode : MonoBehaviour
         AddSystemFeature(SystemFeatures.Resource);
         GalaxyNodeResourceData resource = new GalaxyNodeResourceData
         {
+            resourceID = resources.Count,
             resourceType = m_resource,
             totalResource = resourceAmount,
             productionRate = productionRate
         };
 
         resources.Add(resource);
+    }
+
+    public void EnableResource(int resourceID)
+    {
+        GalaxyNodeResourceData[] data = GetResourcesData();
+        data[resourceID].isEnabled = true;
+        resources[resourceID] = data[resourceID];
+    }
+
+    public void DisableResource(int resourceID)
+    {
+        GalaxyNodeResourceData[] data = GetResourcesData();
+        data[resourceID].isEnabled = false;
+        resources[resourceID] = data[resourceID];
     }
 
     //Getters and Setters

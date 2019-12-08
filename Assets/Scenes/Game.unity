@@ -399,6 +399,7 @@ MonoBehaviour:
   panBorderThickness: 10
   panLimit: 150
   zoomSpeed: 40
+  enablePanByBorder: 0
   minZoom: 30
   maxZoom: 150
   cam: {fileID: 735034770}

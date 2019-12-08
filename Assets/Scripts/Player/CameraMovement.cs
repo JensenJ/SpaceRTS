@@ -15,6 +15,9 @@ public class CameraMovement : MonoBehaviour
     float zoomSpeed = 40f;
 
     [SerializeField]
+    bool enablePanByBorder = false;
+
+    [SerializeField]
     public float minZoom = 30.0f;
     [SerializeField]
     public float maxZoom = 200.0f;
@@ -47,19 +50,19 @@ public class CameraMovement : MonoBehaviour
     {
         //Camera positioning
         Vector3 currentPos = transform.position;
-        if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panBorderThickness)
+        if (Input.GetKey("w") || (Input.mousePosition.y >= Screen.height - panBorderThickness && enablePanByBorder == true))
         {
             currentPos.y += panSpeed * Time.deltaTime;
         }
-        if (Input.GetKey("s") || Input.mousePosition.y <= panBorderThickness)
+        if (Input.GetKey("s") || (Input.mousePosition.y <= panBorderThickness && enablePanByBorder == true))
         {
             currentPos.y -= panSpeed * Time.deltaTime;
         }
-        if (Input.GetKey("d") || Input.mousePosition.x >= Screen.width - panBorderThickness)
+        if (Input.GetKey("d") || (Input.mousePosition.x >= Screen.width - panBorderThickness && enablePanByBorder == true))
         {
             currentPos.x += panSpeed * Time.deltaTime;
         }
-        if (Input.GetKey("a") || Input.mousePosition.x <= panBorderThickness)
+        if (Input.GetKey("a") || (Input.mousePosition.x <= panBorderThickness && enablePanByBorder == true))
         {
             currentPos.x -= panSpeed * Time.deltaTime;
         }

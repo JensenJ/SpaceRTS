@@ -45,6 +45,7 @@ public struct GalaxyGenerationResourceData
 [System.Serializable]
 public struct GalaxyNodeResourceData
 {
+    public int resourceID;
     public Resources.ResourceType resourceType;
     public int totalResource;
     public int productionRate;
