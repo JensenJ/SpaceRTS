@@ -44,7 +44,8 @@ public class GalaxyNode : MonoBehaviour
     public void CreateNodeUI(GameObject nodePrefab, GameObject resourcePrefab)
     {
         //Spawn info panel
-        infoPanel = Instantiate(nodePrefab, transform.position, Quaternion.identity, transform);
+        Vector2 position = new Vector2(transform.position.x, transform.position.y + resources.Count);
+        infoPanel = Instantiate(nodePrefab, position, Quaternion.identity, transform);
         resourceContentPanel = infoPanel.transform.GetChild(0).GetChild(1).GetChild(0).gameObject;
         for (int i = 0; i < resources.Count; i++)
         {
