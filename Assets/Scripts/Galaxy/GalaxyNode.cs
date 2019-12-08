@@ -70,6 +70,7 @@ public class GalaxyNode : MonoBehaviour
         return infoPanel.activeSelf;
     }
 
+    //Updates the node UI if any changes are present, e.g. some resources have been drained
     public void UpdateNodeUI()
     {
         transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = gameObject.name;
@@ -102,6 +103,7 @@ public class GalaxyNode : MonoBehaviour
         resources.Add(resource);
     }
 
+    //Turns the resource on, e.g. allows production
     public void EnableResource(int resourceID)
     {
         GalaxyNodeResourceData[] data = GetResourcesData();
@@ -109,6 +111,7 @@ public class GalaxyNode : MonoBehaviour
         resources[resourceID] = data[resourceID];
     }
 
+    //Turns the resource off, e.g. disallows production
     public void DisableResource(int resourceID)
     {
         GalaxyNodeResourceData[] data = GetResourcesData();
@@ -125,15 +128,18 @@ public class GalaxyNode : MonoBehaviour
         renderer.color = data.factionColour;
     }
 
+    //Returns the resource data of this node
     public GalaxyNodeResourceData[] GetResourcesData()
     {
         return resources.ToArray();
     }
+    //Returns all system features
     public SystemFeatures[] GetSystemFeatures()
     {
         return features.ToArray();
     }
 
+    //Returns the owning faction id
     public int GetOwningFactionID()
     {
         return owningFactionID;

@@ -38,10 +38,12 @@ public static class Factions
             //If positioning is valid
             if (valid == true)
             {
+                //Basic setup
                 factions[i].homeSystem = homeSystem;
                 homeSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
                 homeSystem.SetOwningFaction(i);
                 homeSystems[i] = homeSystem.gameObject;
+                factions[i].hasCapitulated = false;
 
                 //Assigning Galaxy node arrays
                 factions[i].exploredSystems = new List<GalaxyNode>();
@@ -99,7 +101,21 @@ public static class Factions
     {
         if (factionID < factions.Length && factionID >= 0)
         {
-            factions[factionID].exploredSystems.Add(newExploredSystem);
+            //Check the system is not already in the list
+            bool alreadyInList = false;
+            FactionData data = factions[factionID];
+            for (int i = 0; i < data.exploredSystems.Count; i++)
+            {
+                if (data.ownedSystems.Contains(newExploredSystem))
+                {
+                    alreadyInList = true;
+                }
+            }
+            //If allowed to proceed
+            if(alreadyInList == false)
+            {
+                factions[factionID].exploredSystems.Add(newExploredSystem);
+            }
         }
     }
 
@@ -108,9 +124,54 @@ public static class Factions
     {
         if (factionID < factions.Length && factionID >= 0)
         {
-            factions[factionID].ownedSystems.Add(newControlledSystem);
-            newControlledSystem.SetOwningFaction(factionID);
-            UpdateResourceInflux(factionID, newControlledSystem);
+            //Check the system is not already in the list
+            bool alreadyInList = false;
+            FactionData data = factions[factionID];
+            for (int i = 0; i < data.ownedSystems.Count; i++)
+            {
+                if (data.ownedSystems.Contains(newControlledSystem))
+                {
+                    alreadyInList = true;
+                }
+            }
+
+            //If its new to the list
+            if (alreadyInList == false)
+            {
+                //Add to explored systems, incase it wasnt added before
+                AddExploredSystem(factionID, newControlledSystem);
+                //Adding to controlled
+                factions[factionID].ownedSystems.Add(newControlledSystem);
+                newControlledSystem.SetOwningFaction(factionID);
+                UpdateResourceInflux(factionID, newControlledSystem);
+
+                //Capitulation logic
+                if (newControlledSystem == factions[factionID].homeSystem && factions[factionID].hasCapitulated)
+                {
+                    SetCapitulatedStatus(factionID, false);
+                }
+
+                //Check for capitulation of other nation
+                for (int i = 0; i < factions.Length; i++)
+                {
+                    data = GetFactionData(i);
+                    int homeSystemOwner = data.homeSystem.GetOwningFactionID();
+                    if(data.factionID != homeSystemOwner)
+                    {
+                        SetCapitulatedStatus(data.factionID, true);
+                    }
+                }
+            }
+        }
+    }
+
+    //Sets the capitulation status on a faction.
+    public static void SetCapitulatedStatus(int factionID, bool status)
+    {
+        if(factionID < factions.Length && factionID >= 0)
+        {
+            factions[factionID].hasCapitulated = status;
+            Debug.Log(factions[factionID].factionName + " capitulation status: " + status);
         }
     }
 
@@ -156,6 +217,11 @@ public static class Factions
             return factions[0];
         }
     }
+
+    public static int GetNumberOfFactions()
+    {
+        return numberOfFactions;
+    }
 }
 
 //Faction data struct
@@ -164,6 +230,7 @@ public struct FactionData
 {
     public int factionID;
     public string factionName;
+    public bool hasCapitulated;
     public Color factionColour;
     public GalaxyNode homeSystem;
     public List<GalaxyNode> exploredSystems;
