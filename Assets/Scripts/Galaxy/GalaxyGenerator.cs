@@ -80,6 +80,8 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int coroutineCollisionYieldIntervals = 10;
     [SerializeField]
+    int coroutineResourceYieldIntervals = 10;
+    [SerializeField]
     bool displayGenerationTime = false;
     [SerializeField]
     bool printGenerationDataToCSV = false;
@@ -257,10 +259,12 @@ public class GalaxyGenerator : MonoBehaviour
             {
                 if(systems[i] != null)
                 {
+                    //Get node and setup
                     GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
                     node.name = "Node " + i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                    if(i % coroutineCollisionYieldIntervals == 0)
+                    //coroutine yield check
+                    if(i % coroutineResourceYieldIntervals == 0)
                     {
                         yield return null;
                     }
@@ -390,7 +394,7 @@ public class GalaxyGenerator : MonoBehaviour
             if (node != null)
             {
                 //Node resource addition
-                node.AddResource(data.nodeResourceType, Mathf.FloorToInt(data.resourceRichnessMultiplier * Random.Range(3000.0f, 7000.0f)), Random.Range(data.minProductionRate, data.maxProductionRate));
+                node.AddResource(data.nodeResourceType, Mathf.FloorToInt(data.resourceRichnessMultiplier * Random.Range(data.minResourceRichness, data.maxResourceRichness)), Random.Range(data.minProductionRate, data.maxProductionRate));
             }
         }
     }

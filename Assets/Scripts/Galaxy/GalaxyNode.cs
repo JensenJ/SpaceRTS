@@ -8,9 +8,7 @@ public class GalaxyNode : MonoBehaviour
     [SerializeField]
     int owningFactionID = -1;
 
-    [SerializeField]
     GameObject resourceContentPanel = null;
-
     GameObject infoPanel = null;
 
     //Possible features that a system can have
@@ -26,6 +24,7 @@ public class GalaxyNode : MonoBehaviour
     [SerializeField]
     private List<SystemFeatures> features = new List<SystemFeatures>();
 
+    //Resource list
     [SerializeField]
     private List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
 

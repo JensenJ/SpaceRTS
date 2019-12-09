@@ -197,6 +197,7 @@ MonoBehaviour:
   debugMode: 1
   coroutineGenerateYieldIntervals: 500
   coroutineCollisionYieldIntervals: 30
+  coroutineResourceYieldIntervals: 50
   displayGenerationTime: 1
   printGenerationDataToCSV: 0
   repeatGenerations: 0

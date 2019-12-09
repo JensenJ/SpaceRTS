@@ -31,6 +31,10 @@ public struct GalaxyGenerationResourceData
     public string name;
     [Range(0.1f, 4.0f)]
     public float resourceRichnessMultiplier;
+    [Range(1000, 9000)]
+    public int minResourceRichness;
+    [Range(4000, 12000)]
+    public int maxResourceRichness;
     [Range(10, 25)]
     public int minProductionRate;
     [Range(25, 50)]
