@@ -149,18 +149,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  systemDensity: 0.412
+  systemDensity: 0.25
   systemRadius: 150
   ringIntervalMultiplier: 25
   systemCenterRadius: 0
-  systemRingCount: 4
+  systemRingCount: 5
   systemCollisionDistance: 1.5
+  systemRingWidth: 4
+  systemConnectRange: 5
   systemCollisions: 1
   randomGeneration: 1
   numberOfSystemsGenerated: 0
-  systemEquidistant: 0
-  systemRingWidth: 3
-  systemConnectRange: 5
+  systemConnections: 0
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
@@ -194,7 +194,7 @@ MonoBehaviour:
     resourcePercentage: 26
     currentNodeCount: 0
     nodeResourceType: 3
-  systemFactions: 1
+  systemFactions: 0
   numberOfFactions: 20
   factions: []
   nodeUIPrefab: {fileID: 4020746814728133829, guid: e0da396c0eb8fd944958e74ce4c17328,
@@ -203,12 +203,13 @@ MonoBehaviour:
     type: 3}
   debugMode: 1
   coroutineGenerateYieldIntervals: 500
-  coroutineCollisionYieldIntervals: 30
-  coroutineResourceYieldIntervals: 50
+  coroutineCollisionYieldIntervals: 40
+  coroutineResourceYieldIntervals: 75
   displayGenerationTime: 1
-  printGenerationDataToCSV: 0
-  repeatGenerations: 0
-  numberOfTimesToGenerate: 50
+  printGenerationDataToCSV: 1
+  generationCost: 0
+  repeatGenerations: 1
+  numberOfTimesToGenerate: 20
   currentGeneration: 0
   playerCamera: {fileID: 735034770}
 --- !u!4 &6192557

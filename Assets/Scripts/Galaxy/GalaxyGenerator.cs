@@ -26,6 +26,12 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0.01f, 5.0f)]
     float systemCollisionDistance = 1.5f;
     [SerializeField]
+    [Range(0.25f, 6.0f)]
+    float systemRingWidth = 1.0f;
+    [SerializeField]
+    [Range(3.0f, 20.0f)]
+    float systemConnectRange = 5.0f;
+    [SerializeField]
     bool systemCollisions = true;
     [SerializeField]
     bool randomGeneration = false;
@@ -33,15 +39,8 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int numberOfSystemsGenerated = 0;
 
-    [Space(10)]
     [SerializeField]
-    bool systemEquidistant = true;
-    [SerializeField]
-    [Range(0.25f, 4.0f)]
-    float systemRingWidth = 1.0f;
-
-    [SerializeField]
-    float systemConnectRange = 5.0f;
+    bool systemConnections = true;
 
     [Space(20)]
     [SerializeField]
@@ -89,7 +88,8 @@ public class GalaxyGenerator : MonoBehaviour
     bool displayGenerationTime = false;
     [SerializeField]
     bool printGenerationDataToCSV = false;
-
+    [SerializeField]
+    float generationCost = 0;
     [SerializeField]
     bool repeatGenerations = false;
     [SerializeField]
@@ -107,6 +107,7 @@ public class GalaxyGenerator : MonoBehaviour
     float[] radii;
     int[] numberOfSystems;
     float[] ringIntervals;
+    float[] generationCosts;
 
     IEnumerator currentGenerateCoroutine;
     float startTime;
@@ -131,7 +132,7 @@ public class GalaxyGenerator : MonoBehaviour
         radii = new float[numberOfTimesToGenerate];
         ringIntervals = new float[numberOfTimesToGenerate];
         numberOfSystems = new int[numberOfTimesToGenerate];
-
+        generationCosts = new float[numberOfTimesToGenerate];
 
         if (currentGenerateCoroutine != null)
         {
@@ -160,21 +161,40 @@ public class GalaxyGenerator : MonoBehaviour
             //If random generation
             if (randomGeneration == true)
             {
-                systemDensity = Random.Range(0.2f, 0.25f);
+                systemDensity = Random.Range(0.10f, 0.12f);
                 systemCenterRadius = Random.Range(0.0f, 25.0f);
                 systemRingCount = Random.Range(4, 7);
-                systemRingWidth = Random.Range(1.25f, 3.0f);
-                systemCollisionDistance = Random.Range(1.5f, 2.25f);
-                systemRadius = systemRingCount * ringIntervalMultiplier;
-
-                densities[k] = systemDensity;
-                centerRadii[k] = systemCenterRadius;
-                ringCounts[k] = systemRingCount;
-                ringWidths[k] = systemRingWidth;
-                collisionDistances[k] = systemCollisionDistance;
-                radii[k] = systemRadius;
-                ringIntervals[k] = ringIntervalMultiplier;
+                systemRingWidth = Random.Range(3.5f, 4.5f);
             }
+
+            //Calculating other variables using randomly generated or selected values
+            systemRadius = systemRingCount * ringIntervalMultiplier;
+            generationCost = systemRingCount * systemRingWidth * systemDensity;
+
+            //Generation cost warnings
+            if(generationCost > 6.0f)
+            {
+                Debug.LogWarning("High generation cost");
+            }
+            else if(generationCost > 4.0f)
+            {
+                Debug.LogWarning("Medium generation cost");
+            }
+            else
+            {
+                Debug.Log("Low generation cost");
+            }
+
+            //Array assignments
+            densities[k] = systemDensity;
+            centerRadii[k] = systemCenterRadius;
+            ringCounts[k] = systemRingCount;
+            ringWidths[k] = systemRingWidth;
+            collisionDistances[k] = systemCollisionDistance;
+            radii[k] = systemRadius;
+            ringIntervals[k] = ringIntervalMultiplier;
+            generationCosts[k] = generationCost;
+
             //For each system ring
             for (int i = 0; i < systemRingCount; i++)
             {
@@ -201,20 +221,11 @@ public class GalaxyGenerator : MonoBehaviour
 
                 for (int j = 0; j < numberOfSystemsForRing; j++)
                 {
-                    Vector2 newPos;
-                    if (systemEquidistant)
-                    {
-                        //Spawn systems that have an equal distance from each other.
-                        float angle = j * Mathf.PI * 2f / numberOfSystemsForRing;
-                        newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius), Mathf.Sin(angle) * (ringRadius + systemCenterRadius));
-                    }
-                    else
-                    {
-                        //Spawn systems randomly
-                        float angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
-                        newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingCount, systemRingWidth), 
-                            Mathf.Sin(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingWidth, systemRingWidth));
-                    }
+                    //Spawn systems randomly
+                    float angle = Random.Range(0.0f, 1.0f) * Mathf.PI * 2f;
+                    Vector2 newPos = new Vector2(Mathf.Cos(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingCount, systemRingWidth), 
+                        Mathf.Sin(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingWidth, systemRingWidth));
+                    
                     //Calculate position
                     Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
                     if(j % coroutineGenerateYieldIntervals == 0)
@@ -222,7 +233,6 @@ public class GalaxyGenerator : MonoBehaviour
                         yield return null;
                     }
                 }
-                
             }
             //Get all current systems within scene
             systems = GetAllGalaxySystems();
@@ -274,19 +284,21 @@ public class GalaxyGenerator : MonoBehaviour
                     GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
                     node.name = "Node " + i;
 
-                    //Generate connecting nodes for every node, used in AI pathfinding
-                    GameObject[] systemsToConnect = CheckRangeOfSystems(systems[i], systemConnectRange, false);
-                    //Connect these nodes
-                    for (int j = 0; j < systemsToConnect.Length; j++)
+                    if (systemConnections)
                     {
-                        //print(systems[i] + " connecting to " + systemsToConnect[j]);
-                        //Add to connecting node list
-                        GalaxyNode currentConnectNode = systemsToConnect[j].GetComponent<GalaxyNode>();
-                        node.AddConnectingNode(currentConnectNode);
-                        //Coroutine yield interval
-                        if (i % coroutineCollisionYieldIntervals == 0)
+                        //Generate connecting nodes for every node, used in AI pathfinding
+                        GameObject[] systemsToConnect = CheckRangeOfSystems(systems[i], systemConnectRange, false);
+                        //Connect these nodes
+                        for (int j = 0; j < systemsToConnect.Length; j++)
                         {
-                            yield return null;
+                            //Add to connecting node list
+                            GalaxyNode currentConnectNode = systemsToConnect[j].GetComponent<GalaxyNode>();
+                            node.AddConnectingNode(currentConnectNode);
+                            //Coroutine yield interval
+                            if (i % coroutineCollisionYieldIntervals == 0)
+                            {
+                                yield return null;
+                            }
                         }
                     }
 
@@ -315,70 +327,7 @@ public class GalaxyGenerator : MonoBehaviour
             timings[k] = Time.time - startTime;
             if (debugMode == true)
             {
-                //Display generation times
-                if (displayGenerationTime == true)
-                {
-                    Debug.Log("Time taken to generate galaxy " + k + ": " + timings[k] + " seconds");
-                    //Total time taken for generation
-                    if(numberOfTimesToGenerate == k + 1)
-                    {
-                        float total = 0.0f;
-                        //For every timing, add to total
-                        for (int i = 0; i < timings.Length; i++)
-                        {
-                            total += timings[i];
-                        }
-                        //Print total
-                        Debug.Log("Total time taken to generate " + numberOfTimesToGenerate + " galaxies: " + total + " seconds");
-                    }
-                }
-                //print data to CSV only when on last generation
-                if(printGenerationDataToCSV == true && numberOfTimesToGenerate == k + 1)
-                {
-                    int numberOfHeadings = 13;
-                    string[,] data = new string[numberOfHeadings, numberOfTimesToGenerate];
-                    string[] headings = new string[numberOfHeadings];
-
-                    //Headings
-                    headings[0] = "Time (s):";
-                    headings[1] = "Density";
-                    headings[2] = "Center Radius";
-                    headings[3] = "Ring Count";
-                    headings[4] = "Ring Width";
-                    headings[5] = "Collision Dist";
-                    headings[6] = "Radius";
-                    headings[7] = "Ring Intervals";
-                    headings[8] = "System Count";
-                    headings[9] = "Faction Count";
-
-                    //Data for each heading
-                    for (int i = 0; i < numberOfTimesToGenerate; i++)
-                    {
-                        data[0, i] = timings[i].ToString("n4");
-                        data[1, i] = densities[i].ToString("n4");
-                        data[2, i] = centerRadii[i].ToString("n4");
-                        data[3, i] = ringCounts[i].ToString();
-                        data[4, i] = ringWidths[i].ToString("n4");
-                        data[5, i] = collisionDistances[i].ToString("n4");
-                        data[6, i] = radii[i].ToString();
-                        data[7, i] = ringIntervals[i].ToString("n4");
-                        data[8, i] = numberOfSystems[i].ToString();
-                        data[9, i] = numberOfFactions.ToString();
-                    }
-                    Utilities.WriteToCSV("GenerationData", headings, data);
-                }
-                //Repeatedly destroy galaxy and recreate until the number of generations is met
-                if (repeatGenerations == true)
-                {
-                    //Only destroy if not last galaxy to generate.
-                    if (numberOfTimesToGenerate != k + 1)
-                    {
-                        for (int i = 0; i < systemRingCount; i++)
-                        {
-                            Destroy(transform.GetChild(i + 1).gameObject);
-                        }
-                    }
-                }
+                RunDebugging(k);
                 currentGeneration++;
             }
         }
@@ -387,33 +336,39 @@ public class GalaxyGenerator : MonoBehaviour
     //Checks the range of systems and returns an array with all overlapping actors
     GameObject[] CheckRangeOfSystems(GameObject system, float checkDistance, bool returnTarget)
     {
-        //Get location of current system
-        Vector2 location = system.transform.position;
+        //Create list
         List<GameObject> rangedSystems = new List<GameObject>();
-        //For each system in galaxy
-        for (int i = 0; i < systems.Length; i++)
+        //Null pointer check
+        if (system != null)
         {
-            //Check its not null
-            if (systems[i] != null) 
+            //Get location of current system
+            Vector2 location = system.transform.position;
+            //For each system in galaxy
+            for (int i = 0; i < systems.Length; i++)
             {
-                //If current system is equal to iteration system, then skip it
-                if(systems[i] == system)
+                //Check its not null
+                if (systems[i] != null)
                 {
-                    continue;
-                }
-                //Calculate distance
-                Vector2 currentNodePosition = systems[i].transform.position;
-                float distance = Vector2.Distance(location, currentNodePosition);
-                //Destroy object if closer than collisionDistance
-                if (distance <= checkDistance)
-                {
-                    if (returnTarget)
+                    //If current system is equal to iteration system, then skip it
+                    if (systems[i] == system)
                     {
-                        rangedSystems.Add(system);
+                        continue;
                     }
-                    else
+                    //Calculate distance
+                    Vector2 currentNodePosition = systems[i].transform.position;
+                    float distance = Vector2.Distance(location, currentNodePosition);
+                    //Destroy object if closer than collisionDistance
+                    if (distance <= checkDistance)
                     {
-                        rangedSystems.Add(systems[i]);
+                        //Should the function return the parameter system passed in?
+                        if (returnTarget)
+                        {
+                            rangedSystems.Add(system);
+                        }
+                        else
+                        {
+                            rangedSystems.Add(systems[i]);
+                        }
                     }
                 }
             }
@@ -442,5 +397,73 @@ public class GalaxyGenerator : MonoBehaviour
     GameObject[] GetAllGalaxySystems()
     {
         return GameObject.FindGameObjectsWithTag("GalaxySystem");
+    }
+
+    void RunDebugging(int currentGeneration)
+    {
+        //Display generation times
+        if (displayGenerationTime == true)
+        {
+            Debug.Log("Time taken to generate galaxy " + currentGeneration + ": " + timings[currentGeneration] + " seconds");
+            //Total time taken for generation
+            if (numberOfTimesToGenerate == currentGeneration + 1)
+            {
+                float total = 0.0f;
+                //For every timing, add to total
+                for (int i = 0; i < timings.Length; i++)
+                {
+                    total += timings[i];
+                }
+                //Print total
+                Debug.Log("Total time taken to generate " + numberOfTimesToGenerate + " galaxies: " + total + " seconds");
+            }
+        }
+        //print data to CSV only when on last generation
+        if (printGenerationDataToCSV == true && numberOfTimesToGenerate == currentGeneration + 1)
+        {
+            int numberOfHeadings = 13;
+            string[,] data = new string[numberOfHeadings, numberOfTimesToGenerate];
+            string[] headings = new string[numberOfHeadings];
+
+            //Headings
+            headings[0] = "Time (s):";
+            headings[1] = "Density";
+            headings[2] = "Center Radius";
+            headings[3] = "Ring Count";
+            headings[4] = "Ring Width";
+            headings[5] = "Collision Dist";
+            headings[6] = "Radius";
+            headings[7] = "Ring Intervals";
+            headings[8] = "System Count";
+            headings[9] = "Generation Cost";
+
+            //Data for each heading
+            for (int i = 0; i < numberOfTimesToGenerate; i++)
+            {
+                data[0, i] = timings[i].ToString("n4");
+                data[1, i] = densities[i].ToString("n4");
+                data[2, i] = centerRadii[i].ToString("n4");
+                data[3, i] = ringCounts[i].ToString();
+                data[4, i] = ringWidths[i].ToString("n4");
+                data[5, i] = collisionDistances[i].ToString("n4");
+                data[6, i] = radii[i].ToString();
+                data[7, i] = ringIntervals[i].ToString("n4");
+                data[8, i] = numberOfSystems[i].ToString();
+                data[9, i] = generationCosts[i].ToString();
+            }
+            Utilities.WriteToCSV("GenerationData", headings, data);
+        }
+        //Repeatedly destroy galaxy and recreate until the number of generations is met
+        if (repeatGenerations == true)
+        {
+            //Only destroy if not last galaxy to generate.
+            if (numberOfTimesToGenerate != currentGeneration + 1)
+            {
+                for (int i = 0; i < systemRingCount; i++)
+                {
+                    Destroy(transform.GetChild(i + 1).gameObject);
+                }
+            }
+        }
     }
 }
