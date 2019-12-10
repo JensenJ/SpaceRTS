@@ -160,6 +160,7 @@ MonoBehaviour:
   numberOfSystemsGenerated: 0
   systemEquidistant: 0
   systemRingWidth: 3
+  systemConnectRange: 5
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
@@ -168,6 +169,8 @@ MonoBehaviour:
   systemResourcesData:
   - name: Fuel
     resourceRichnessMultiplier: 1
+    minResourceRichness: 3000
+    maxResourceRichness: 7000
     minProductionRate: 14
     maxProductionRate: 40
     resourcePercentage: 18.3
@@ -175,6 +178,8 @@ MonoBehaviour:
     nodeResourceType: 2
   - name: Energy
     resourceRichnessMultiplier: 1
+    minResourceRichness: 3000
+    maxResourceRichness: 7000
     minProductionRate: 14
     maxProductionRate: 41
     resourcePercentage: 34.5
@@ -182,6 +187,8 @@ MonoBehaviour:
     nodeResourceType: 1
   - name: Minerals
     resourceRichnessMultiplier: 1
+    minResourceRichness: 3000
+    maxResourceRichness: 7000
     minProductionRate: 10
     maxProductionRate: 33
     resourcePercentage: 26

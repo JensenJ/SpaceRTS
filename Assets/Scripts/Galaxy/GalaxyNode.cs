@@ -28,6 +28,9 @@ public class GalaxyNode : MonoBehaviour
     [SerializeField]
     private List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
 
+    [SerializeField]
+    private List<GalaxyNode> connectingNodes = new List<GalaxyNode>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +88,14 @@ public class GalaxyNode : MonoBehaviour
     public void AddSystemFeature(SystemFeatures m_feature)
     {
         features.Add(m_feature);
+    }
+
+    public void AddConnectingNode(GalaxyNode nodeToConnect)
+    {
+        if (!connectingNodes.Contains(nodeToConnect))
+        {
+            connectingNodes.Add(nodeToConnect);
+        }
     }
 
     //Add a resource to a node.

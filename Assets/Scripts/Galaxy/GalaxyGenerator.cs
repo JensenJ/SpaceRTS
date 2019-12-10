@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class GalaxyGenerator : MonoBehaviour
@@ -39,6 +40,9 @@ public class GalaxyGenerator : MonoBehaviour
     [Range(0.25f, 4.0f)]
     float systemRingWidth = 1.0f;
 
+    [SerializeField]
+    float systemConnectRange = 5.0f;
+
     [Space(20)]
     [SerializeField]
     GameObject systemPrefab = null;
@@ -70,7 +74,7 @@ public class GalaxyGenerator : MonoBehaviour
     GameObject nodeUIPrefab = null;
     [SerializeField]
     GameObject nodeResourceInfoUI = null;
-
+    
     //Debug settings
     [Header("Debug: ")]
     [SerializeField]
@@ -228,7 +232,14 @@ public class GalaxyGenerator : MonoBehaviour
                 //Remove colliding systems (check if they are valid)
                 for (int i = 0; i < systems.Length; i++)
                 {
-                    CheckValidSystem(systems[i]);
+                    //Get all systems within range of systems[i]
+                    GameObject[] systemsToDestroy = CheckRangeOfSystems(systems[i], systemCollisionDistance, true);
+                    //Destroy those systems
+                    for (int j = 0; j < systemsToDestroy.Length; j++)
+                    {
+                        DestroyImmediate(systemsToDestroy[j]);
+                    }
+                    //Coroutine yield interval
                     if(i % coroutineCollisionYieldIntervals == 0)
                     {
                         yield return null;
@@ -254,14 +265,32 @@ public class GalaxyGenerator : MonoBehaviour
                 }
             }
 
-            //For every system after resource generation
+            //For every system
             for (int i = 0; i < systems.Length; i++)
             {
                 if(systems[i] != null)
                 {
-                    //Get node and setup
+                    //Get node
                     GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
                     node.name = "Node " + i;
+
+                    //Generate connecting nodes for every node, used in AI pathfinding
+                    GameObject[] systemsToConnect = CheckRangeOfSystems(systems[i], systemConnectRange, false);
+                    //Connect these nodes
+                    for (int j = 0; j < systemsToConnect.Length; j++)
+                    {
+                        //print(systems[i] + " connecting to " + systemsToConnect[j]);
+                        //Add to connecting node list
+                        GalaxyNode currentConnectNode = systemsToConnect[j].GetComponent<GalaxyNode>();
+                        node.AddConnectingNode(currentConnectNode);
+                        //Coroutine yield interval
+                        if (i % coroutineCollisionYieldIntervals == 0)
+                        {
+                            yield return null;
+                        }
+                    }
+
+                    //Node setup
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
@@ -355,10 +384,12 @@ public class GalaxyGenerator : MonoBehaviour
         }
     }
 
-    void CheckValidSystem(GameObject system)
+    //Checks the range of systems and returns an array with all overlapping actors
+    GameObject[] CheckRangeOfSystems(GameObject system, float checkDistance, bool returnTarget)
     {
         //Get location of current system
         Vector2 location = system.transform.position;
+        List<GameObject> rangedSystems = new List<GameObject>();
         //For each system in galaxy
         for (int i = 0; i < systems.Length; i++)
         {
@@ -374,12 +405,20 @@ public class GalaxyGenerator : MonoBehaviour
                 Vector2 currentNodePosition = systems[i].transform.position;
                 float distance = Vector2.Distance(location, currentNodePosition);
                 //Destroy object if closer than collisionDistance
-                if (distance <= systemCollisionDistance)
+                if (distance <= checkDistance)
                 {
-                    DestroyImmediate(system);
+                    if (returnTarget)
+                    {
+                        rangedSystems.Add(system);
+                    }
+                    else
+                    {
+                        rangedSystems.Add(systems[i]);
+                    }
                 }
             }
         }
+        return rangedSystems.ToArray();
     }
 
     //Determines which nodes should be resource nodes
