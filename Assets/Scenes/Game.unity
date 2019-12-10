@@ -160,7 +160,7 @@ MonoBehaviour:
   systemCollisions: 1
   randomGeneration: 1
   numberOfSystemsGenerated: 0
-  systemConnections: 0
+  systemConnections: 1
   systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
     type: 3}
   ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
@@ -194,7 +194,7 @@ MonoBehaviour:
     resourcePercentage: 26
     currentNodeCount: 0
     nodeResourceType: 3
-  systemFactions: 0
+  systemFactions: 1
   numberOfFactions: 20
   factions: []
   nodeUIPrefab: {fileID: 4020746814728133829, guid: e0da396c0eb8fd944958e74ce4c17328,
@@ -206,12 +206,18 @@ MonoBehaviour:
   coroutineCollisionYieldIntervals: 40
   coroutineResourceYieldIntervals: 75
   displayGenerationTime: 1
-  printGenerationDataToCSV: 1
+  printGenerationDataToCSV: 0
   generationCost: 0
   repeatGenerations: 1
-  numberOfTimesToGenerate: 20
+  numberOfTimesToGenerate: 10
   currentGeneration: 0
   playerCamera: {fileID: 735034770}
+  positionLoading: 0
+  collisionLoading: 0
+  resourceLoading: 0
+  connectLoading: 0
+  totalLoading: 0
+  finishedLoading: 0
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0

@@ -97,6 +97,21 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     int currentGeneration = 0;
 
+    //Loading bars
+    [Space(10)]
+    [SerializeField]
+    float positionLoading = 0.0f;
+    [SerializeField]
+    float collisionLoading = 0.0f;
+    [SerializeField]
+    float resourceLoading = 0.0f;
+    [SerializeField]
+    float connectLoading = 0.0f;
+    [SerializeField]
+    float totalLoading = 0.0f;
+    [SerializeField]
+    bool finishedLoading = false;
+
     //Data arrays
     float[] timings;
     float[] densities;
@@ -108,7 +123,8 @@ public class GalaxyGenerator : MonoBehaviour
     int[] numberOfSystems;
     float[] ringIntervals;
     float[] generationCosts;
-
+    
+    //Other
     IEnumerator currentGenerateCoroutine;
     float startTime;
     [SerializeField]
@@ -147,7 +163,7 @@ public class GalaxyGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        totalLoading = Mathf.Clamp01((positionLoading + collisionLoading + resourceLoading + connectLoading) / 4);
     }
 
     //Coroutine to spawn the galaxy, coroutine needed otherwise performance is awful.
@@ -155,6 +171,13 @@ public class GalaxyGenerator : MonoBehaviour
     {
         for (int k = 0; k < numberOfTimesToGenerate; k++)
         {
+            //Resetting loading bars
+            positionLoading = 0.0f;
+            collisionLoading = 0.0f;
+            resourceLoading = 0.0f;
+            connectLoading = 0.0f;
+            totalLoading = 0.0f;
+
             numberOfSystemsGenerated = 0;
             startTime = Time.time;
 
@@ -232,6 +255,8 @@ public class GalaxyGenerator : MonoBehaviour
                     {
                         yield return null;
                     }
+                    //Loading calculation
+                    positionLoading = Mathf.Clamp01((float)(i * j) / (float)(systemRingCount * systemRingCount));
                 }
             }
             //Get all current systems within scene
@@ -254,6 +279,8 @@ public class GalaxyGenerator : MonoBehaviour
                     {
                         yield return null;
                     }
+                    //Loading calculation
+                    collisionLoading = Mathf.Clamp01((float)i / (float)systems.Length);
                 }
                 //Get all current systems within scene after some have been removed
                 systems = GetAllGalaxySystems();
@@ -271,7 +298,7 @@ public class GalaxyGenerator : MonoBehaviour
                 {
                     //Generating resource data
                     systemResourcesData[i].currentNodeCount = Mathf.FloorToInt(systemResourcesData[i].resourcePercentage / 100 * systems.Length);
-                    GenerateResourceNodes(systemResourcesData[i]);
+                    GenerateResourceNodes(systemResourcesData[i], i);
                 }
             }
 
@@ -282,7 +309,6 @@ public class GalaxyGenerator : MonoBehaviour
                 {
                     //Get node
                     GalaxyNode node = systems[i].GetComponent<GalaxyNode>();
-                    node.name = "Node " + i;
 
                     if (systemConnections)
                     {
@@ -299,10 +325,14 @@ public class GalaxyGenerator : MonoBehaviour
                             {
                                 yield return null;
                             }
+
                         }
+                        //Loading calculation
+                        connectLoading = Mathf.Clamp01((float)i / (float)systems.Length);
                     }
 
                     //Node setup
+                    node.name = "Node " + i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
@@ -331,6 +361,7 @@ public class GalaxyGenerator : MonoBehaviour
                 currentGeneration++;
             }
         }
+        finishedLoading = true;
     }
 
     //Checks the range of systems and returns an array with all overlapping actors
@@ -377,10 +408,10 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Determines which nodes should be resource nodes
-    void GenerateResourceNodes(GalaxyGenerationResourceData data)
+    void GenerateResourceNodes(GalaxyGenerationResourceData data, int currentResource)
     {
         //Repeat for the number of nodes that are designated as the nodetype
-        for (int j = 0; j < data.currentNodeCount; j++)
+        for (int i = 0; i < data.currentNodeCount; i++)
         {
             //Random node
             GalaxyNode node = systems[Random.Range(0, systems.Length)].GetComponent<GalaxyNode>();
@@ -389,6 +420,9 @@ public class GalaxyGenerator : MonoBehaviour
             {
                 //Node resource addition
                 node.AddResource(data.nodeResourceType, Mathf.FloorToInt(data.resourceRichnessMultiplier * Random.Range(data.minResourceRichness, data.maxResourceRichness)), Random.Range(data.minProductionRate, data.maxProductionRate));
+                
+                //Loading calculation
+                resourceLoading = Mathf.Clamp01((float)(i  * (currentResource+1)) / (float)(systemResourcesData.Length * data.currentNodeCount));
             }
         }
     }
@@ -404,7 +438,7 @@ public class GalaxyGenerator : MonoBehaviour
         //Display generation times
         if (displayGenerationTime == true)
         {
-            Debug.Log("Time taken to generate galaxy " + currentGeneration + ": " + timings[currentGeneration] + " seconds");
+            Debug.Log("Time taken to generate galaxy " + (currentGeneration + 1)+ ": " + timings[currentGeneration] + " seconds");
             //Total time taken for generation
             if (numberOfTimesToGenerate == currentGeneration + 1)
             {
