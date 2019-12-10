@@ -57,15 +57,15 @@ public static class Factions
                 factions[i].resourceData = new FactionResourceData[3];
 
                 //Energy allocation
-                factions[i].resourceData[0].resourceType = Resources.ResourceType.Energy;
+                factions[i].resourceData[0].resourceType = ResourceData.ResourceType.Energy;
                 factions[i].resourceData[0].resourceStored = 1000;
                 factions[i].resourceData[0].resourceInflux = 10;
                 //Fuel allocation
-                factions[i].resourceData[1].resourceType = Resources.ResourceType.Fuel;
+                factions[i].resourceData[1].resourceType = ResourceData.ResourceType.Fuel;
                 factions[i].resourceData[1].resourceStored = 1000;
                 factions[i].resourceData[1].resourceInflux = 10;
                 //Minerals allocation
-                factions[i].resourceData[2].resourceType = Resources.ResourceType.Minerals;
+                factions[i].resourceData[2].resourceType = ResourceData.ResourceType.Minerals;
                 factions[i].resourceData[2].resourceStored = 1000;
                 factions[i].resourceData[2].resourceInflux = 10;
                 //Update resources

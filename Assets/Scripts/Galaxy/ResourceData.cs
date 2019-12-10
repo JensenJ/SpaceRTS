@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Resources
+public class ResourceData
 {
     // Start is called before the first frame update
     void Start()
@@ -42,7 +42,7 @@ public struct GalaxyGenerationResourceData
     [Range(0, 100)]
     public float resourcePercentage;
     public int currentNodeCount;
-    public Resources.ResourceType nodeResourceType;
+    public ResourceData.ResourceType nodeResourceType;
 }
 
 //Data for the node in the galaxy map.
@@ -50,7 +50,7 @@ public struct GalaxyGenerationResourceData
 public struct GalaxyNodeResourceData
 {
     public int resourceID;
-    public Resources.ResourceType resourceType;
+    public ResourceData.ResourceType resourceType;
     public int totalResource;
     public int productionRate;
     public bool isEnabled;
@@ -60,7 +60,7 @@ public struct GalaxyNodeResourceData
 [System.Serializable]
 public struct FactionResourceData
 {
-    public Resources.ResourceType resourceType;
+    public ResourceData.ResourceType resourceType;
     public int resourceStored;
     public int resourceInflux;
     public int resourceDrain;

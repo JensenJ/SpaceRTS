@@ -99,7 +99,7 @@ public class GalaxyNode : MonoBehaviour
     }
 
     //Add a resource to a node.
-    public void AddResource(Resources.ResourceType m_resource, int resourceAmount, int productionRate)
+    public void AddResource(ResourceData.ResourceType m_resource, int resourceAmount, int productionRate)
     {
         AddSystemFeature(SystemFeatures.Resource);
         GalaxyNodeResourceData resource = new GalaxyNodeResourceData

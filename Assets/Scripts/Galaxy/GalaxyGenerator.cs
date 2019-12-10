@@ -1,9 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GalaxyGenerator : MonoBehaviour
 {
+
+    [Header("References:")]
+    [SerializeField]
+    GameObject systemPrefab = null;
+    [SerializeField]
+    GameObject ringPrefab = null;
+    [SerializeField]
+    ProgressBar galaxyLoadingBar = null;
+    [SerializeField]
+    Camera playerCamera = null;
 
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
@@ -42,12 +53,6 @@ public class GalaxyGenerator : MonoBehaviour
     [SerializeField]
     bool systemConnections = true;
 
-    [Space(20)]
-    [SerializeField]
-    GameObject systemPrefab = null;
-    [SerializeField]
-    GameObject ringPrefab = null;
-
     GameObject[] systems;
 
     //Resource Settings
@@ -73,7 +78,7 @@ public class GalaxyGenerator : MonoBehaviour
     GameObject nodeUIPrefab = null;
     [SerializeField]
     GameObject nodeResourceInfoUI = null;
-    
+
     //Debug settings
     [Header("Debug: ")]
     [SerializeField]
@@ -127,12 +132,15 @@ public class GalaxyGenerator : MonoBehaviour
     //Other
     IEnumerator currentGenerateCoroutine;
     float startTime;
-    [SerializeField]
-    Camera playerCamera = null;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (galaxyLoadingBar == null)
+        {
+            Debug.LogError("Loading bar is not assigned!");
+        }
+
         if(repeatGenerations == false || debugMode == false)
         {
             numberOfTimesToGenerate = 1;
@@ -164,6 +172,11 @@ public class GalaxyGenerator : MonoBehaviour
     void Update()
     {
         totalLoading = Mathf.Clamp01((positionLoading + collisionLoading + resourceLoading + connectLoading) / 4);
+        galaxyLoadingBar.SetCurrentFill(totalLoading, 0.0f, 1.0f);
+        if (finishedLoading)
+        {
+            galaxyLoadingBar.DisableBar();
+        }
     }
 
     //Coroutine to spawn the galaxy, coroutine needed otherwise performance is awful.
@@ -255,10 +268,11 @@ public class GalaxyGenerator : MonoBehaviour
                     {
                         yield return null;
                     }
-                    //Loading calculation
-                    positionLoading = Mathf.Clamp01((float)(i * j) / (float)(systemRingCount * systemRingCount));
                 }
+                //Loading calculation
+                positionLoading = Mathf.Clamp01((float)i / (float)systemRingCount);
             }
+            positionLoading = 1.0f;
             //Get all current systems within scene
             systems = GetAllGalaxySystems();
 
@@ -285,6 +299,7 @@ public class GalaxyGenerator : MonoBehaviour
                 //Get all current systems within scene after some have been removed
                 systems = GetAllGalaxySystems();
             }
+            collisionLoading = 1.0f;
 
             //Calculate number of systems
             numberOfSystemsGenerated = systems.Length;
@@ -301,6 +316,7 @@ public class GalaxyGenerator : MonoBehaviour
                     GenerateResourceNodes(systemResourcesData[i], i);
                 }
             }
+            resourceLoading = 1.0f;
 
             //For every system
             for (int i = 0; i < systems.Length; i++)
@@ -341,6 +357,7 @@ public class GalaxyGenerator : MonoBehaviour
                     }
                 }
             }
+            connectLoading = 1.0f;
 
             //If factions are enabled.
             if (systemFactions == true)
