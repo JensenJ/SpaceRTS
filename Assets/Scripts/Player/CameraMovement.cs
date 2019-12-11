@@ -43,9 +43,10 @@ public class CameraMovement : MonoBehaviour
         maxZoom = m_maxZoom;
     }
 
-    public void LoadSettings(float zoom)
+    public void LoadSettings(float zoom, Vector3 position)
     {
         cam.orthographicSize = zoom;
+        transform.position = position;
     }
 
     // Update is called once per frame
@@ -74,12 +75,18 @@ public class CameraMovement : MonoBehaviour
         currentPos.x = Mathf.Clamp(currentPos.x, -panLimit, panLimit);
         currentPos.y = Mathf.Clamp(currentPos.y, -panLimit, panLimit);
         transform.position = currentPos;
-        //SaveData.current.cameraPosition = transform.position;
+
+        //Saving data to save manager
+        SaveData.current.cameraPosition = transform.position;
 
         //Camera scrolling
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         cam.orthographicSize -= scroll * zoomSpeed * 100 * Time.deltaTime;
         cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
+        if(SaveData.current.cameraOrthographicSize != 0)
+        {
+            cam.orthographicSize = SaveData.current.cameraOrthographicSize;
+        }
         SaveData.current.cameraOrthographicSize = cam.orthographicSize;
     }
 }

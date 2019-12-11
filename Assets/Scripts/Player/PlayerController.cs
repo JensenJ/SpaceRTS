@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour
         {
             print("Loading");
             SaveData.current = (SaveData)SerializationManager.Load(Application.dataPath + "/Saves/Save.GSGSAVE");
-            GetComponent<CameraMovement>().LoadSettings(SaveData.current.cameraOrthographicSize);
+            GetComponent<CameraMovement>().LoadSettings(SaveData.current.cameraOrthographicSize, SaveData.current.cameraPosition);
         }
     }
 }

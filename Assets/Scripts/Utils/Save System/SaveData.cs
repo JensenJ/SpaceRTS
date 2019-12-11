@@ -22,12 +22,15 @@ public class SaveData
         //Setter
         set
         {
-            _current = value;
+            if(value != null)
+            {
+                _current = value;
+            }
         }
     }
 
     //Values to store
-    //public Vector3 cameraPosition;
+    public Vector3 cameraPosition;
     public float cameraOrthographicSize;
 
     
