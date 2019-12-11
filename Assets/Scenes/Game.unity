@@ -613,6 +613,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bcdf3a0ac7fc404791adb062f134eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerFactionID: 0
+  isDebugModeEnabled: 1
+  currentlySelectedNode: {fileID: 0}
+  previouslySelectedNode: {fileID: 0}
 --- !u!1 &1082351809
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]
     float panBorderThickness = 10f;
     [SerializeField]
-    public float panLimit = 150.0f;
+    float panLimit = 150.0f;
     [SerializeField]
     float zoomSpeed = 40f;
 
@@ -16,9 +16,9 @@ public class CameraMovement : MonoBehaviour
     bool enablePanByBorder = false;
 
     [SerializeField]
-    public float minZoom = 30.0f;
+    float minZoom = 30.0f;
     [SerializeField]
-    public float maxZoom = 200.0f;
+    float maxZoom = 200.0f;
 
     [SerializeField]
     Camera cam;
@@ -41,6 +41,11 @@ public class CameraMovement : MonoBehaviour
         panLimit = m_panLimit;
         minZoom = m_minZoom;
         maxZoom = m_maxZoom;
+    }
+
+    public void LoadSettings(float zoom)
+    {
+        cam.orthographicSize = zoom;
     }
 
     // Update is called once per frame
@@ -69,11 +74,12 @@ public class CameraMovement : MonoBehaviour
         currentPos.x = Mathf.Clamp(currentPos.x, -panLimit, panLimit);
         currentPos.y = Mathf.Clamp(currentPos.y, -panLimit, panLimit);
         transform.position = currentPos;
+        //SaveData.current.cameraPosition = transform.position;
 
         //Camera scrolling
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         cam.orthographicSize -= scroll * zoomSpeed * 100 * Time.deltaTime;
         cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
-
+        SaveData.current.cameraOrthographicSize = cam.orthographicSize;
     }
 }

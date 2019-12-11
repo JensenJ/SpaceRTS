@@ -2,6 +2,7 @@
 using UnityEngine;
 using TMPro;
 
+[System.Serializable]
 public class GalaxyNode : MonoBehaviour
 {
 
