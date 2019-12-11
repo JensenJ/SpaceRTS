@@ -48,10 +48,15 @@ public class GalaxyNode : MonoBehaviour
         //Spawn info panel
         Vector2 position = new Vector2(transform.position.x, transform.position.y + resources.Count);
         infoPanel = Instantiate(nodePrefab, position, Quaternion.identity, transform);
-        resourceContentPanel = infoPanel.transform.GetChild(0).GetChild(1).GetChild(0).gameObject;
+        resourceContentPanel = infoPanel.transform.GetChild(0).GetChild(0).GetChild(1).GetChild(0).gameObject;
         for (int i = 0; i < resources.Count; i++)
         {
             Instantiate(resourcePrefab, transform.position, Quaternion.identity, resourceContentPanel.transform);
+        }
+        //Disable resources panel if there are no resources on the node
+        if(resources.Count <= 0)
+        {
+            resourceContentPanel.SetActive(false);
         }
         DisableInfoPanel();
         UpdateNodeUI();
@@ -75,7 +80,7 @@ public class GalaxyNode : MonoBehaviour
     //Updates the node UI if any changes are present, e.g. some resources have been drained
     public void UpdateNodeUI()
     {
-        transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = gameObject.name;
+        transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = gameObject.name;
         for (int i = 0; i < resourceContentPanel.transform.childCount; i++)
         {
             //Resource panel

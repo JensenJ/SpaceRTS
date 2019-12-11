@@ -149,6 +149,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b7214747beb74f94935d4bd6df912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
+    type: 3}
+  ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
+    type: 3}
+  galaxyLoadingBar: {fileID: 258497151}
+  playerCamera: {fileID: 735034770}
   systemDensity: 0.25
   systemRadius: 150
   ringIntervalMultiplier: 25
@@ -161,10 +167,6 @@ MonoBehaviour:
   randomGeneration: 1
   numberOfSystemsGenerated: 0
   systemConnections: 1
-  systemPrefab: {fileID: 2564935123665342088, guid: b6eb2e2e3b730644286e0cf272042025,
-    type: 3}
-  ringPrefab: {fileID: 9039793094670945473, guid: 45f7fafb609563e4580ed33e9679841d,
-    type: 3}
   systemResources: 1
   systemResourcesData:
   - name: Fuel
@@ -201,7 +203,6 @@ MonoBehaviour:
     type: 3}
   nodeResourceInfoUI: {fileID: 8021522571838656454, guid: 03f75b2b4eddbf94099a9248159e7b4e,
     type: 3}
-  galaxyLoadingBar: {fileID: 258497151}
   debugMode: 1
   coroutineGenerateYieldIntervals: 100
   coroutineCollisionYieldIntervals: 40
@@ -209,7 +210,7 @@ MonoBehaviour:
   displayGenerationTime: 1
   printGenerationDataToCSV: 0
   generationCost: 0
-  repeatGenerations: 1
+  repeatGenerations: 0
   numberOfTimesToGenerate: 10
   currentGeneration: 0
   positionLoading: 0
@@ -218,7 +219,6 @@ MonoBehaviour:
   connectLoading: 0
   totalLoading: 0
   finishedLoading: 0
-  playerCamera: {fileID: 735034770}
 --- !u!4 &6192557
 Transform:
   m_ObjectHideFlags: 0
@@ -271,7 +271,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_SizeDelta: {x: -4, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &9843147
 MonoBehaviour:
