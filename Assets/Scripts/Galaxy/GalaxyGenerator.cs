@@ -161,7 +161,7 @@ public class GalaxyGenerator : MonoBehaviour
             StopCoroutine(currentGenerateCoroutine);
         }
 
-        currentGenerateCoroutine = SpawnGalaxyCoroutine();
+        currentGenerateCoroutine = CreateGalaxyCoroutine();
         StartCoroutine(currentGenerateCoroutine);
         
     }
@@ -216,12 +216,29 @@ public class GalaxyGenerator : MonoBehaviour
         connectLoading = 0.0f;
         totalLoading = 0.0f;
 
+        //Calculate number of rings
+        int numberOfRings = 0;
+        for (int i = 0; i < galaxyNodes.Count; i++)
+        {
+            numberOfRings = galaxyNodes[i].currentRing;
+        }
+        //Instantiate those rings
+        for (int i = 0; i < numberOfRings; i++)
+        {
+            GameObject ring = Instantiate(ringPrefab, new Vector3(0, 0), Quaternion.identity, transform);
+            ring.name = "GalaxyRing " + (i + 1);
+        }
+
+        //For every node to be created
         for (int i = 0; i < galaxyNodes.Count; i++)
         {
             //Instantiate to a position
-            GameObject node = Instantiate(systemPrefab, galaxyNodes[i].position, Quaternion.identity, transform);
-            //node.GetComponent<GalaxyNode>().currentRing = i + 1;
-            node.gameObject.name = galaxyNodes[i].nodeName;
+            GameObject node = Instantiate(systemPrefab, galaxyNodes[i].position, Quaternion.identity, transform.GetChild(galaxyNodes[i].currentRing - 1));
+            node.name = "Node " + (i - 1);
+
+            GalaxyNode galaxyNode = node.GetComponent<GalaxyNode>();
+            galaxyNode.UpdateGalaxyNodeData(galaxyNodes[i].currentRing);
+
             if (i % coroutineGenerateYieldIntervals == 0)
             {
                 yield return null;
@@ -235,7 +252,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Coroutine to spawn the galaxy, coroutine needed otherwise performance is awful.
-    IEnumerator SpawnGalaxyCoroutine()
+    IEnumerator CreateGalaxyCoroutine()
     {
         for (int k = 0; k < numberOfTimesToGenerate; k++)
         {
@@ -407,7 +424,7 @@ public class GalaxyGenerator : MonoBehaviour
                     //Node setup
                     node.name = "Node " + i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                    node.UpdateGalaxyNodeData();
+                    node.UpdateGalaxyNodeData(node.currentRing);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
                     {

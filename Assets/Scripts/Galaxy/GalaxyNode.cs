@@ -9,8 +9,6 @@ public class GalaxyNode : MonoBehaviour
     public int currentRing;
     [SerializeField]
     public Vector3 position;
-    [SerializeField]
-    public string nodeName;
 
     [SerializeField]
     int owningFactionID = -1;
@@ -39,18 +37,6 @@ public class GalaxyNode : MonoBehaviour
     [SerializeField]
     private List<GalaxyNode> connectingNodes = new List<GalaxyNode>();
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void CreateNodeUI(GameObject nodePrefab, GameObject resourcePrefab)
     {
         //Spawn info panel
@@ -71,10 +57,10 @@ public class GalaxyNode : MonoBehaviour
         UpdateNodeUI();
     }
 
-    public void UpdateGalaxyNodeData()
+    public void UpdateGalaxyNodeData(int ring)
     {
         position = transform.position;
-        nodeName = transform.gameObject.name;
+        currentRing = ring;
     }
 
     //Info panel functions
