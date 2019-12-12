@@ -5,6 +5,12 @@ using TMPro;
 [System.Serializable]
 public class GalaxyNode : MonoBehaviour
 {
+    [SerializeField]
+    public int currentRing;
+    [SerializeField]
+    public Vector3 position;
+    [SerializeField]
+    public string nodeName;
 
     [SerializeField]
     int owningFactionID = -1;
@@ -13,6 +19,7 @@ public class GalaxyNode : MonoBehaviour
     GameObject infoPanel = null;
 
     //Possible features that a system can have
+    [System.Serializable]
     public enum SystemFeatures {
         None,
         Resource,
@@ -50,6 +57,7 @@ public class GalaxyNode : MonoBehaviour
         Vector2 position = new Vector2(transform.position.x, transform.position.y + resources.Count);
         infoPanel = Instantiate(nodePrefab, position, Quaternion.identity, transform);
         resourceContentPanel = infoPanel.transform.GetChild(0).GetChild(0).GetChild(1).GetChild(0).gameObject;
+        //Create new node UI
         for (int i = 0; i < resources.Count; i++)
         {
             Instantiate(resourcePrefab, transform.position, Quaternion.identity, resourceContentPanel.transform);
@@ -61,6 +69,12 @@ public class GalaxyNode : MonoBehaviour
         }
         DisableInfoPanel();
         UpdateNodeUI();
+    }
+
+    public void UpdateGalaxyNodeData()
+    {
+        position = transform.position;
+        nodeName = transform.gameObject.name;
     }
 
     //Info panel functions

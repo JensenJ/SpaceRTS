@@ -15,6 +15,7 @@ public class ResourceData
     }
 
     //Different types of resources
+    [System.Serializable]
     public enum ResourceType
     {
         None,

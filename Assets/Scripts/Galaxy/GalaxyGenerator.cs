@@ -114,8 +114,6 @@ public class GalaxyGenerator : MonoBehaviour
     float connectLoading = 0.0f;
     [SerializeField]
     float totalLoading = 0.0f;
-    [SerializeField]
-    bool finishedLoading = false;
 
     //Data arrays
     float[] timings;
@@ -163,7 +161,7 @@ public class GalaxyGenerator : MonoBehaviour
             StopCoroutine(currentGenerateCoroutine);
         }
 
-        currentGenerateCoroutine = SpawnGalaxy();
+        currentGenerateCoroutine = SpawnGalaxyCoroutine();
         StartCoroutine(currentGenerateCoroutine);
         
     }
@@ -173,14 +171,71 @@ public class GalaxyGenerator : MonoBehaviour
     {
         totalLoading = Mathf.Clamp01((positionLoading + collisionLoading + resourceLoading + connectLoading) / 4);
         galaxyLoadingBar.SetCurrentFill(totalLoading, 0.0f, 1.0f);
-        if (finishedLoading)
+        //If finished loading
+        if (totalLoading >= 1)
         {
             galaxyLoadingBar.DisableBar();
         }
+        else if(galaxyLoadingBar.IsBarEnabled() == false)
+        {
+            galaxyLoadingBar.EnableBar();
+        }
+    }
+
+    //Public function to load a galaxy
+    public void LoadGalaxy(List<GalaxyNode> nodes)
+    {
+        ClearGalaxyMap();
+        if (currentGenerateCoroutine != null)
+        {
+            StopCoroutine(currentGenerateCoroutine);
+        }
+
+        currentGenerateCoroutine = LoadGalaxyCoroutine(nodes);
+        StartCoroutine(currentGenerateCoroutine);
+
+    }
+
+    //function to clear the galaxy map by destroying the rings
+    public void ClearGalaxyMap()
+    {
+        //For every galaxy ring, destroy it
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
+    }
+
+    //Coroutine to load the galaxy map
+    IEnumerator LoadGalaxyCoroutine(List<GalaxyNode> galaxyNodes)
+    {
+        //Reset loading bars
+        positionLoading = 0.0f;
+        collisionLoading = 0.0f;
+        resourceLoading = 0.0f;
+        connectLoading = 0.0f;
+        totalLoading = 0.0f;
+
+        for (int i = 0; i < galaxyNodes.Count; i++)
+        {
+            //Instantiate to a position
+            GameObject node = Instantiate(systemPrefab, galaxyNodes[i].position, Quaternion.identity, transform);
+            //node.GetComponent<GalaxyNode>().currentRing = i + 1;
+            node.gameObject.name = galaxyNodes[i].nodeName;
+            if (i % coroutineGenerateYieldIntervals == 0)
+            {
+                yield return null;
+            }
+            positionLoading = Mathf.Clamp01((float)i / (float)systemRingCount);
+        }
+        positionLoading = 1.0f;
+        collisionLoading = 1.0f;
+        resourceLoading = 1.0f;
+        connectLoading = 1.0f;
     }
 
     //Coroutine to spawn the galaxy, coroutine needed otherwise performance is awful.
-    IEnumerator SpawnGalaxy()
+    IEnumerator SpawnGalaxyCoroutine()
     {
         for (int k = 0; k < numberOfTimesToGenerate; k++)
         {
@@ -263,7 +318,8 @@ public class GalaxyGenerator : MonoBehaviour
                         Mathf.Sin(angle) * (ringRadius + systemCenterRadius) + Random.Range(-systemRingWidth, systemRingWidth));
                     
                     //Calculate position
-                    Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i + 1));
+                    GameObject node = Instantiate(systemPrefab, newPos, Quaternion.identity, transform.GetChild(i));
+                    node.GetComponent<GalaxyNode>().currentRing = i + 1;
                     if(j % coroutineGenerateYieldIntervals == 0)
                     {
                         yield return null;
@@ -319,6 +375,7 @@ public class GalaxyGenerator : MonoBehaviour
             resourceLoading = 1.0f;
 
             //For every system
+            SaveData.current.galaxyNodes = new List<GalaxyNode>();
             for (int i = 0; i < systems.Length; i++)
             {
                 if(systems[i] != null)
@@ -350,11 +407,13 @@ public class GalaxyGenerator : MonoBehaviour
                     //Node setup
                     node.name = "Node " + i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
+                    node.UpdateGalaxyNodeData();
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
                     {
                         yield return null;
                     }
+                    SaveData.current.galaxyNodes.Add(node);
                 }
             }
             connectLoading = 1.0f;
@@ -378,7 +437,6 @@ public class GalaxyGenerator : MonoBehaviour
                 currentGeneration++;
             }
         }
-        finishedLoading = true;
     }
 
     //Checks the range of systems and returns an array with all overlapping actors

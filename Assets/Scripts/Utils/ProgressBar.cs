@@ -73,4 +73,9 @@ public class ProgressBar : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+
+    public bool IsBarEnabled()
+    {
+        return gameObject.activeSelf;
+    }
 }

@@ -32,6 +32,7 @@ public class SaveData
     //Values to store
     public Vector3 cameraPosition;
     public float cameraOrthographicSize;
+    public List<GalaxyNode> galaxyNodes;
 
     
 }

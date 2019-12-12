@@ -7,8 +7,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     int playerFactionID = 0;
     [SerializeField]
-    bool isDebugModeEnabled = false;
-    [SerializeField]
     GalaxyNode currentlySelectedNode = null;
     [SerializeField]
     GalaxyNode previouslySelectedNode = null;
@@ -22,11 +20,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Debug mode
-        if (isDebugModeEnabled)
-        {
-            DebugMode();
-        }
 
         //If left mouse button clicked
         if (Input.GetMouseButtonDown(0))
@@ -68,22 +61,6 @@ public class PlayerController : MonoBehaviour
                     previouslySelectedNode.DisableInfoPanel();
                 }
             }
-        }
-    }
-
-    //Function for debug stuff, e.g. console commands
-    void DebugMode()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            print("Saving");
-            SerializationManager.Save("Save", SaveData.current);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            print("Loading");
-            SaveData.current = (SaveData)SerializationManager.Load(Application.dataPath + "/Saves/Save.GSGSAVE");
-            GetComponent<CameraMovement>().LoadSettings(SaveData.current.cameraOrthographicSize, SaveData.current.cameraPosition);
         }
     }
 }
