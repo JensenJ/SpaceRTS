@@ -6,6 +6,8 @@ using TMPro;
 public class GalaxyNode : MonoBehaviour
 {
     [SerializeField]
+    public int nodeID;
+    [SerializeField]
     public int currentRing;
     [SerializeField]
     public Vector3 position;
@@ -28,14 +30,17 @@ public class GalaxyNode : MonoBehaviour
 
     //Allows multiple galaxy features in a single system
     [SerializeField]
-    private List<SystemFeatures> features = new List<SystemFeatures>();
+    public List<SystemFeatures> features = new List<SystemFeatures>();
 
     //Resource list
     [SerializeField]
-    private List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
+    public List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
 
     [SerializeField]
-    private List<GalaxyNode> connectingNodes = new List<GalaxyNode>();
+    public List<int> connectingNodeID = new List<int>();
+
+    [SerializeField]
+    public List<GalaxyNode> connectingNodes = new List<GalaxyNode>();
 
     public void CreateNodeUI(GameObject nodePrefab, GameObject resourcePrefab)
     {
@@ -57,10 +62,12 @@ public class GalaxyNode : MonoBehaviour
         UpdateNodeUI();
     }
 
-    public void UpdateGalaxyNodeData(int ring)
+    public void UpdateGalaxyNodeData(int ring, List<SystemFeatures> newFeatures, List<int> newConnectionID)
     {
         position = transform.position;
         currentRing = ring;
+        features = newFeatures;
+        connectingNodeID = newConnectionID;
     }
 
     //Info panel functions
@@ -96,6 +103,16 @@ public class GalaxyNode : MonoBehaviour
         features.Add(m_feature);
     }
 
+    //For serialization / rereferencing reasons
+    public void AddConnectingNodeID(int nodeToConnect)
+    {
+        if (!connectingNodeID.Contains(nodeToConnect))
+        {
+            connectingNodeID.Add(nodeToConnect);
+        }
+    }
+
+    //Adding actual nodes to list
     public void AddConnectingNode(GalaxyNode nodeToConnect)
     {
         if (!connectingNodes.Contains(nodeToConnect))
@@ -153,6 +170,18 @@ public class GalaxyNode : MonoBehaviour
     public SystemFeatures[] GetSystemFeatures()
     {
         return features.ToArray();
+    }
+
+    //Returns connecting node ids
+    public int[] GetConnectingNodeIDs()
+    {
+        return connectingNodeID.ToArray();
+    }
+
+    //Returns connecting node galaxy node classes
+    public GalaxyNode[] GetConnectingNodes()
+    {
+        return connectingNodes.ToArray();
     }
 
     //Returns the owning faction id

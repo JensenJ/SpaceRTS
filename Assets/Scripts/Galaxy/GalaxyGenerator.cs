@@ -191,7 +191,7 @@ public class GalaxyGenerator : MonoBehaviour
             StopCoroutine(currentGenerateCoroutine);
         }
 
-        currentGenerateCoroutine = LoadGalaxyCoroutine(nodes);
+        currentGenerateCoroutine = LoadGalaxyCoroutine(nodes.ToArray());
         StartCoroutine(currentGenerateCoroutine);
 
     }
@@ -207,7 +207,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Coroutine to load the galaxy map
-    IEnumerator LoadGalaxyCoroutine(List<GalaxyNode> galaxyNodes)
+    IEnumerator LoadGalaxyCoroutine(GalaxyNode[] galaxyNodes)
     {
         //Reset loading bars
         positionLoading = 0.0f;
@@ -218,7 +218,7 @@ public class GalaxyGenerator : MonoBehaviour
 
         //Calculate number of rings
         int numberOfRings = 0;
-        for (int i = 0; i < galaxyNodes.Count; i++)
+        for (int i = 0; i < galaxyNodes.Length; i++)
         {
             numberOfRings = galaxyNodes[i].currentRing;
         }
@@ -230,14 +230,14 @@ public class GalaxyGenerator : MonoBehaviour
         }
 
         //For every node to be created
-        for (int i = 0; i < galaxyNodes.Count; i++)
+        for (int i = 0; i < galaxyNodes.Length; i++)
         {
             //Instantiate to a position
             GameObject node = Instantiate(systemPrefab, galaxyNodes[i].position, Quaternion.identity, transform.GetChild(galaxyNodes[i].currentRing - 1));
             node.name = "Node " + (i - 1);
 
             GalaxyNode galaxyNode = node.GetComponent<GalaxyNode>();
-            galaxyNode.UpdateGalaxyNodeData(galaxyNodes[i].currentRing);
+            galaxyNode.UpdateGalaxyNodeData(galaxyNodes[i].currentRing, galaxyNodes[i].features, galaxyNodes[i].connectingNodeID);
 
             if (i % coroutineGenerateYieldIntervals == 0)
             {
@@ -245,9 +245,24 @@ public class GalaxyGenerator : MonoBehaviour
             }
             positionLoading = Mathf.Clamp01((float)i / (float)systemRingCount);
         }
+
         positionLoading = 1.0f;
         collisionLoading = 1.0f;
+
         resourceLoading = 1.0f;
+
+        //For every node
+        for (int i = 0; i < galaxyNodes.Length; i++)
+        {
+
+            //Get list of galaxy node ids
+            //Iterate through them
+            //Compare current galaxy id number to iterated node id number
+
+
+            connectLoading = Mathf.Clamp01((float)i / (float)galaxyNodes.Length);
+
+        }
         connectLoading = 1.0f;
     }
 
@@ -362,7 +377,7 @@ public class GalaxyGenerator : MonoBehaviour
                         DestroyImmediate(systemsToDestroy[j]);
                     }
                     //Coroutine yield interval
-                    if(i % coroutineCollisionYieldIntervals == 0)
+                    if (i % coroutineCollisionYieldIntervals == 0)
                     {
                         yield return null;
                     }
@@ -391,6 +406,12 @@ public class GalaxyGenerator : MonoBehaviour
             }
             resourceLoading = 1.0f;
 
+            //Assign systems a node id
+            for (int i = 0; i < systems.Length; i++)
+            {
+                systems[i].GetComponent<GalaxyNode>().nodeID = i;
+            }
+
             //For every system
             SaveData.current.galaxyNodes = new List<GalaxyNode>();
             for (int i = 0; i < systems.Length; i++)
@@ -409,6 +430,7 @@ public class GalaxyGenerator : MonoBehaviour
                         {
                             //Add to connecting node list
                             GalaxyNode currentConnectNode = systemsToConnect[j].GetComponent<GalaxyNode>();
+                            node.AddConnectingNodeID(currentConnectNode.nodeID);
                             node.AddConnectingNode(currentConnectNode);
                             //Coroutine yield interval
                             if (i % coroutineCollisionYieldIntervals == 0)
@@ -424,7 +446,7 @@ public class GalaxyGenerator : MonoBehaviour
                     //Node setup
                     node.name = "Node " + i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                    node.UpdateGalaxyNodeData(node.currentRing);
+                    node.UpdateGalaxyNodeData(node.currentRing, node.features, node.connectingNodeID);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
                     {
