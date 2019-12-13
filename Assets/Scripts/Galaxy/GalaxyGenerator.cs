@@ -191,7 +191,7 @@ public class GalaxyGenerator : MonoBehaviour
             StopCoroutine(currentGenerateCoroutine);
         }
 
-        currentGenerateCoroutine = LoadGalaxyCoroutine(nodes.ToArray());
+        currentGenerateCoroutine = LoadGalaxyCoroutine(nodes);
         StartCoroutine(currentGenerateCoroutine);
 
     }
@@ -207,7 +207,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Coroutine to load the galaxy map
-    IEnumerator LoadGalaxyCoroutine(GalaxyNode[] galaxyNodes)
+    IEnumerator LoadGalaxyCoroutine(List<GalaxyNode> galaxyNodes)
     {
         //Reset loading bars
         positionLoading = 0.0f;
@@ -218,7 +218,7 @@ public class GalaxyGenerator : MonoBehaviour
 
         //Calculate number of rings
         int numberOfRings = 0;
-        for (int i = 0; i < galaxyNodes.Length; i++)
+        for (int i = 0; i < galaxyNodes.Count; i++)
         {
             numberOfRings = galaxyNodes[i].currentRing;
         }
@@ -230,14 +230,14 @@ public class GalaxyGenerator : MonoBehaviour
         }
 
         //For every node to be created
-        for (int i = 0; i < galaxyNodes.Length; i++)
+        for (int i = 0; i < galaxyNodes.Count; i++)
         {
             //Instantiate to a position
             GameObject node = Instantiate(systemPrefab, galaxyNodes[i].position, Quaternion.identity, transform.GetChild(galaxyNodes[i].currentRing - 1));
             node.name = "Node " + (i - 1);
 
             GalaxyNode galaxyNode = node.GetComponent<GalaxyNode>();
-            galaxyNode.UpdateGalaxyNodeData(galaxyNodes[i].currentRing, galaxyNodes[i].features, galaxyNodes[i].connectingNodeID);
+            galaxyNode.UpdateGalaxyNodeData(galaxyNodes[i].currentRing, galaxyNodes[i].features);
 
             if (i % coroutineGenerateYieldIntervals == 0)
             {
@@ -251,17 +251,44 @@ public class GalaxyGenerator : MonoBehaviour
 
         resourceLoading = 1.0f;
 
-        //For every node
-        for (int i = 0; i < galaxyNodes.Length; i++)
+        GameObject[] nodes = GetAllGalaxySystems();
+
+        for (int i = 0; i < nodes.Length; i++)
         {
+            if (nodes[i] != null)
+            {
+                //Get node
+                GalaxyNode node = nodes[i].GetComponent<GalaxyNode>();
 
-            //Get list of galaxy node ids
-            //Iterate through them
-            //Compare current galaxy id number to iterated node id number
+                if (systemConnections)
+                {
+                    //Generate connecting nodes for every node, used in AI pathfinding
+                    GameObject[] systemsToConnect = CheckRangeOfSystems(nodes[i], nodes, systemConnectRange, false);
+                    //Connect these nodes
+                    for (int j = 0; j < systemsToConnect.Length; j++)
+                    {
+                        //Add to connecting node list
+                        GalaxyNode currentConnectNode = systemsToConnect[j].GetComponent<GalaxyNode>();;
+                        node.AddConnectingNode(currentConnectNode);
+                        //Coroutine yield interval
+                        if (i % coroutineCollisionYieldIntervals == 0)
+                        {
+                            yield return null;
+                        }
+                    }
+                    //Loading calculation
+                    connectLoading = Mathf.Clamp01((float)i / (float)nodes.Length);
+                }
 
-
-            connectLoading = Mathf.Clamp01((float)i / (float)galaxyNodes.Length);
-
+                //Node setup
+                node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
+                node.UpdateGalaxyNodeData(node.currentRing, node.features);
+                //coroutine yield check
+                if (i % coroutineResourceYieldIntervals == 0)
+                {
+                    yield return null;
+                }
+            }
         }
         connectLoading = 1.0f;
     }
@@ -370,7 +397,7 @@ public class GalaxyGenerator : MonoBehaviour
                 for (int i = 0; i < systems.Length; i++)
                 {
                     //Get all systems within range of systems[i]
-                    GameObject[] systemsToDestroy = CheckRangeOfSystems(systems[i], systemCollisionDistance, true);
+                    GameObject[] systemsToDestroy = CheckRangeOfSystems(systems[i], systems, systemCollisionDistance, true);
                     //Destroy those systems
                     for (int j = 0; j < systemsToDestroy.Length; j++)
                     {
@@ -424,13 +451,12 @@ public class GalaxyGenerator : MonoBehaviour
                     if (systemConnections)
                     {
                         //Generate connecting nodes for every node, used in AI pathfinding
-                        GameObject[] systemsToConnect = CheckRangeOfSystems(systems[i], systemConnectRange, false);
+                        GameObject[] systemsToConnect = CheckRangeOfSystems(systems[i], systems, systemConnectRange, false);
                         //Connect these nodes
                         for (int j = 0; j < systemsToConnect.Length; j++)
                         {
                             //Add to connecting node list
                             GalaxyNode currentConnectNode = systemsToConnect[j].GetComponent<GalaxyNode>();
-                            node.AddConnectingNodeID(currentConnectNode.nodeID);
                             node.AddConnectingNode(currentConnectNode);
                             //Coroutine yield interval
                             if (i % coroutineCollisionYieldIntervals == 0)
@@ -446,7 +472,7 @@ public class GalaxyGenerator : MonoBehaviour
                     //Node setup
                     node.name = "Node " + i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                    node.UpdateGalaxyNodeData(node.currentRing, node.features, node.connectingNodeID);
+                    node.UpdateGalaxyNodeData(node.currentRing, node.features);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
                     {
@@ -479,7 +505,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Checks the range of systems and returns an array with all overlapping actors
-    GameObject[] CheckRangeOfSystems(GameObject system, float checkDistance, bool returnTarget)
+    GameObject[] CheckRangeOfSystems(GameObject system, GameObject[] systems, float checkDistance, bool returnTarget)
     {
         //Create list
         List<GameObject> rangedSystems = new List<GameObject>();

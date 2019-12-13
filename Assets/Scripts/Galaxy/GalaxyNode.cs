@@ -37,9 +37,6 @@ public class GalaxyNode : MonoBehaviour
     public List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
 
     [SerializeField]
-    public List<int> connectingNodeID = new List<int>();
-
-    [SerializeField]
     public List<GalaxyNode> connectingNodes = new List<GalaxyNode>();
 
     public void CreateNodeUI(GameObject nodePrefab, GameObject resourcePrefab)
@@ -62,12 +59,11 @@ public class GalaxyNode : MonoBehaviour
         UpdateNodeUI();
     }
 
-    public void UpdateGalaxyNodeData(int ring, List<SystemFeatures> newFeatures, List<int> newConnectionID)
+    public void UpdateGalaxyNodeData(int ring, List<SystemFeatures> newFeatures)
     {
         position = transform.position;
         currentRing = ring;
         features = newFeatures;
-        connectingNodeID = newConnectionID;
     }
 
     //Info panel functions
@@ -101,15 +97,6 @@ public class GalaxyNode : MonoBehaviour
     public void AddSystemFeature(SystemFeatures m_feature)
     {
         features.Add(m_feature);
-    }
-
-    //For serialization / rereferencing reasons
-    public void AddConnectingNodeID(int nodeToConnect)
-    {
-        if (!connectingNodeID.Contains(nodeToConnect))
-        {
-            connectingNodeID.Add(nodeToConnect);
-        }
     }
 
     //Adding actual nodes to list
@@ -170,12 +157,6 @@ public class GalaxyNode : MonoBehaviour
     public SystemFeatures[] GetSystemFeatures()
     {
         return features.ToArray();
-    }
-
-    //Returns connecting node ids
-    public int[] GetConnectingNodeIDs()
-    {
-        return connectingNodeID.ToArray();
     }
 
     //Returns connecting node galaxy node classes

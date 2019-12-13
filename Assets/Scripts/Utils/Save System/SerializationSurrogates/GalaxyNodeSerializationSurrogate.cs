@@ -14,7 +14,6 @@ public class GalaxyNodeSerializationSurrogate : ISerializationSurrogate
         info.AddValue("id", node.nodeID);
         info.AddValue("ring", node.currentRing);
         info.AddValue("features", node.features);
-        info.AddValue("connections", node.connectingNodeID);
     }
 
     public object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
@@ -26,7 +25,6 @@ public class GalaxyNodeSerializationSurrogate : ISerializationSurrogate
         node.nodeID = (int)info.GetValue("id", typeof(int));
         node.currentRing = (int)info.GetValue("ring", typeof(int));
         node.features = (List<GalaxyNode.SystemFeatures>)info.GetValue("features", typeof(List<GalaxyNode.SystemFeatures>));
-        node.connectingNodeID = (List<int>)info.GetValue("connections", typeof(List<int>));
 
         obj = node;
         return obj;
