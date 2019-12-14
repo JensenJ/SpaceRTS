@@ -15,6 +15,10 @@ public class GalaxyGenerator : MonoBehaviour
     ProgressBar galaxyLoadingBar = null;
     [SerializeField]
     Camera playerCamera = null;
+    [SerializeField]
+    GameObject nodeUIPrefab = null;
+    [SerializeField]
+    GameObject nodeResourceInfoUI = null;
 
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
@@ -72,12 +76,6 @@ public class GalaxyGenerator : MonoBehaviour
 
     [SerializeField]
     FactionData[] factions;
-
-    [Header("System Misc settings: ")]
-    [SerializeField]
-    GameObject nodeUIPrefab = null;
-    [SerializeField]
-    GameObject nodeResourceInfoUI = null;
 
     //Debug settings
     [Header("Debug: ")]
@@ -207,7 +205,7 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Coroutine to load the galaxy map
-    IEnumerator LoadGalaxyCoroutine(List<GalaxyNode> galaxyNodes)
+    IEnumerator LoadGalaxyCoroutine(List<GalaxyNode> nodeData)
     {
         //Reset loading bars
         positionLoading = 0.0f;
@@ -218,9 +216,9 @@ public class GalaxyGenerator : MonoBehaviour
 
         //Calculate number of rings
         int numberOfRings = 0;
-        for (int i = 0; i < galaxyNodes.Count; i++)
+        for (int i = 0; i < nodeData.Count; i++)
         {
-            numberOfRings = galaxyNodes[i].currentRing;
+            numberOfRings = nodeData[i].currentRing;
         }
         //Instantiate those rings
         for (int i = 0; i < numberOfRings; i++)
@@ -230,14 +228,14 @@ public class GalaxyGenerator : MonoBehaviour
         }
 
         //For every node to be created
-        for (int i = 0; i < galaxyNodes.Count; i++)
+        for (int i = 0; i < nodeData.Count; i++)
         {
             //Instantiate to a position
-            GameObject node = Instantiate(systemPrefab, galaxyNodes[i].position, Quaternion.identity, transform.GetChild(galaxyNodes[i].currentRing - 1));
+            GameObject node = Instantiate(systemPrefab, nodeData[i].position, Quaternion.identity, transform.GetChild(nodeData[i].currentRing - 1));
             node.name = "Node " + (i - 1);
 
             GalaxyNode galaxyNode = node.GetComponent<GalaxyNode>();
-            galaxyNode.UpdateGalaxyNodeData(galaxyNodes[i].currentRing, galaxyNodes[i].features);
+            galaxyNode.UpdateGalaxyNodeData(nodeData[i].currentRing, nodeData[i].features);
 
             if (i % coroutineGenerateYieldIntervals == 0)
             {
@@ -249,21 +247,29 @@ public class GalaxyGenerator : MonoBehaviour
         positionLoading = 1.0f;
         collisionLoading = 1.0f;
 
+
+        //Array creation
+        GameObject[] nodeObjects = GetAllGalaxySystems();
+
+        for (int i = 0; i < nodeObjects.Length; i++)
+        {
+            GalaxyNode galaxyNode = nodeObjects[i].GetComponent<GalaxyNode>();
+            galaxyNode.resources = nodeData[i].resources;
+            resourceLoading = Mathf.Clamp01((float)i / (float)nodeObjects.Length);
+        }
         resourceLoading = 1.0f;
 
-        GameObject[] nodes = GetAllGalaxySystems();
-
-        for (int i = 0; i < nodes.Length; i++)
+        for (int i = 0; i < nodeObjects.Length; i++)
         {
-            if (nodes[i] != null)
+            if (nodeObjects[i] != null)
             {
                 //Get node
-                GalaxyNode node = nodes[i].GetComponent<GalaxyNode>();
+                GalaxyNode node = nodeObjects[i].GetComponent<GalaxyNode>();
 
                 if (systemConnections)
                 {
                     //Generate connecting nodes for every node, used in AI pathfinding
-                    GameObject[] systemsToConnect = CheckRangeOfSystems(nodes[i], nodes, systemConnectRange, false);
+                    GameObject[] systemsToConnect = CheckRangeOfSystems(nodeObjects[i], nodeObjects, systemConnectRange, false);
                     //Connect these nodes
                     for (int j = 0; j < systemsToConnect.Length; j++)
                     {
@@ -277,7 +283,7 @@ public class GalaxyGenerator : MonoBehaviour
                         }
                     }
                     //Loading calculation
-                    connectLoading = Mathf.Clamp01((float)i / (float)nodes.Length);
+                    connectLoading = Mathf.Clamp01((float)i / (float)nodeObjects.Length);
                 }
 
                 //Node setup
