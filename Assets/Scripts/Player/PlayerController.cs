@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
                         //Debug.Log(data[i].resourceType + " amount: " + data[i].totalResource + " at a rate of: " + data[i].productionRate);
                         currentlySelectedNode.EnableResource(i);
                     }
+                    Factions.RemoveControlledSystem(currentlySelectedNode.GetOwningFactionID(), currentlySelectedNode);
                     Factions.AddControlledSystem(playerFactionID, currentlySelectedNode);
                     Factions.CheckForCapitulation();
                     currentlySelectedNode.EnableInfoPanel();

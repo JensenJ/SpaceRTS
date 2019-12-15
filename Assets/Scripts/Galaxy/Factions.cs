@@ -219,6 +219,29 @@ public static class Factions
         }
     }
 
+    //Function to remove an explored system from the list
+    public static void RemoveExploredSystem(int factionID, GalaxyNode systemToRemove)
+    {
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            FactionData data = factions[factionID];
+            data.exploredSystems.Remove(systemToRemove);
+            data.exploredSystemIDs.Remove(systemToRemove.nodeID);
+        }
+    }
+
+    //Function to remove a controlled system from the list
+    public static void RemoveControlledSystem(int factionID, GalaxyNode systemToRemove)
+    {
+        if (factionID < factions.Length && factionID >= 0)
+        {
+            FactionData data = factions[factionID];
+            data.ownedSystems.Remove(systemToRemove);
+            data.ownedSystemIDs.Remove(systemToRemove.nodeID);
+            UpdateResourceInflux(factionID, systemToRemove);
+        }
+    }
+
     //Function to check for capitulation
     public static void CheckForCapitulation()
     {
