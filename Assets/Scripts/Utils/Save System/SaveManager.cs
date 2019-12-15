@@ -51,6 +51,5 @@ public class SaveManager : MonoBehaviour
         SaveData.current = (SaveData)SerializationManager.Load(Application.dataPath + "/Saves/Save.GSGSAVE");
         playerCamera.LoadSettings(SaveData.current.cameraOrthographicSize, SaveData.current.cameraPosition);
         galaxyGenerator.LoadGalaxy(SaveData.current.galaxyNodes);
-        FactionData[] data = Factions.LoadFactions(SaveData.current.factions);
     }
 }

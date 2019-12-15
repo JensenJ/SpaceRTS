@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //If left mouse button clicked
         if (Input.GetMouseButtonDown(0))
         {
@@ -51,6 +50,7 @@ public class PlayerController : MonoBehaviour
                         currentlySelectedNode.EnableResource(i);
                     }
                     Factions.AddControlledSystem(playerFactionID, currentlySelectedNode);
+                    Factions.CheckForCapitulation();
                     currentlySelectedNode.EnableInfoPanel();
                 }
             }

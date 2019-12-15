@@ -13,6 +13,7 @@ public class FactionDataSerializationSurrogate : ISerializationSurrogate
         info.AddValue("colorR", data.factionColour.r);
         info.AddValue("colorG", data.factionColour.g);
         info.AddValue("colorB", data.factionColour.b);
+        info.AddValue("colorA", data.factionColour.a);
         info.AddValue("capitulation", data.hasCapitulated);
         info.AddValue("homeSystem", data.homeSystem.nodeID);
         info.AddValue("explored", data.exploredSystemIDs);
@@ -28,6 +29,7 @@ public class FactionDataSerializationSurrogate : ISerializationSurrogate
         data.factionColour.r = (float)info.GetValue("colorR", typeof(float));
         data.factionColour.g = (float)info.GetValue("colorG", typeof(float));
         data.factionColour.b = (float)info.GetValue("colorB", typeof(float));
+        data.factionColour.a = (float)info.GetValue("colorA", typeof(float));
         data.hasCapitulated = (bool)info.GetValue("capitulation", typeof(bool));
         data.homeSystemID = (int)info.GetValue("homeSystem", typeof(int));
         data.exploredSystemIDs = (List<int>)info.GetValue("explored", typeof(List<int>));

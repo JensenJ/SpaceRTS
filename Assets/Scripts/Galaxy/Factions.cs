@@ -84,15 +84,35 @@ public static class Factions
         return factions;
     }
 
+    //Function to load faction data
     public static FactionData[] LoadFactions(FactionData[] factionData)
     {
         //Clears current faction data
         ClearFactions(factionData.Length);
         for (int i = 0; i < factionData.Length; i++)
         {
+            //Faction variable assignment
             factions[i] = factionData[i];
             factions[i].homeSystem = GalaxyGenerator.GetGalaxyNodeFromID(factionData[i].homeSystemID, GalaxyGenerator.GetAllGalaxySystems());
+            factions[i].exploredSystems = new List<GalaxyNode>();
+            factions[i].ownedSystems = new List<GalaxyNode>();
+            factions[i].ownedSystemIDs = new List<int>();
+            factions[i].exploredSystemIDs = new List<int>();
+
+            //Get all explored systems
+            for (int j = 0; j < factionData[i].exploredSystemIDs.Count; j++)
+            {
+                GalaxyNode newNode = GalaxyGenerator.GetGalaxyNodeFromID(factionData[i].exploredSystemIDs[j], GalaxyGenerator.GetAllGalaxySystems());
+                AddExploredSystem(factions[i].factionID, newNode);
+            }
+            //Get all owned systems
+            for (int j = 0; j < factionData[i].ownedSystemIDs.Count; j++)
+            {
+                GalaxyNode newNode = GalaxyGenerator.GetGalaxyNodeFromID(factionData[i].ownedSystemIDs[j], GalaxyGenerator.GetAllGalaxySystems());
+                AddControlledSystem(factions[i].factionID, newNode);
+            }
         }
+        SaveData.current.factions = factions;
         return factions;
     }
 
@@ -125,20 +145,29 @@ public static class Factions
         {
             //Check the system is not already in the list
             bool alreadyInList = false;
+            bool alreadyInIDList = false;
             FactionData data = factions[factionID];
             for (int i = 0; i < data.exploredSystems.Count; i++)
             {
-                if (data.ownedSystems.Contains(newExploredSystem))
+                if (data.exploredSystems.Contains(newExploredSystem))
                 {
                     alreadyInList = true;
                 }
+                if (data.exploredSystemIDs.Contains(newExploredSystem.nodeID))
+                {
+                    alreadyInIDList = true;
+                }
             }
+
             //If allowed to proceed
-            if(alreadyInList == false)
+            if (alreadyInList == false)
             {
                 factions[factionID].exploredSystems.Add(newExploredSystem);
-                factions[factionID].exploredSystemIDs.Add(newExploredSystem.nodeID);
             }
+            if(alreadyInIDList == false)
+            {
+                factions[factionID].exploredSystemIDs.Add(newExploredSystem.nodeID);
+            } 
         }
     }
 
@@ -149,12 +178,17 @@ public static class Factions
         {
             //Check the system is not already in the list
             bool alreadyInList = false;
+            bool alreadyInIDList = false;
             FactionData data = factions[factionID];
             for (int i = 0; i < data.ownedSystems.Count; i++)
             {
                 if (data.ownedSystems.Contains(newControlledSystem))
                 {
                     alreadyInList = true;
+                }
+                if (data.ownedSystemIDs.Contains(newControlledSystem.nodeID))
+                {
+                    alreadyInIDList = true;
                 }
             }
 
@@ -165,26 +199,27 @@ public static class Factions
                 AddExploredSystem(factionID, newControlledSystem);
                 //Adding to controlled lists
                 factions[factionID].ownedSystems.Add(newControlledSystem);
-                factions[factionID].ownedSystemIDs.Add(newControlledSystem.nodeID);
                 newControlledSystem.SetOwningFaction(factionID);
                 UpdateResourceInflux(factionID, newControlledSystem);
+            }
+            if (alreadyInIDList == false)
+            {
+                factions[factionID].ownedSystemIDs.Add(newControlledSystem.nodeID);
+            }
+        }
+    }
 
-                //Capitulation logic
-                if (newControlledSystem == factions[factionID].homeSystem && factions[factionID].hasCapitulated)
-                {
-                    SetCapitulatedStatus(factionID, false);
-                }
-
-                //Check for capitulation of other nation
-                for (int i = 0; i < factions.Length; i++)
-                {
-                    data = GetFactionData(i);
-                    int homeSystemOwner = data.homeSystem.GetOwningFactionID();
-                    if(data.factionID != homeSystemOwner)
-                    {
-                        SetCapitulatedStatus(data.factionID, true);
-                    }
-                }
+    //Function to check for capitulation
+    public static void CheckForCapitulation()
+    {
+        //Check for capitulation of other nation
+        for (int i = 0; i < factions.Length; i++)
+        {
+            FactionData data = GetFactionData(i);
+            int homeSystemOwner = data.homeSystem.GetOwningFactionID();
+            if (data.factionID != homeSystemOwner)
+            {
+                SetCapitulatedStatus(data.factionID, true);
             }
         }
     }
@@ -258,9 +293,9 @@ public struct FactionData
     public Color factionColour;
     public int homeSystemID;
     public GalaxyNode homeSystem;
-    public List<GalaxyNode> exploredSystems;
     public List<int> exploredSystemIDs;
     public List<int> ownedSystemIDs;
+    public List<GalaxyNode> exploredSystems;
     public List<GalaxyNode> ownedSystems;
     public FactionResourceData[] resourceData;
 }

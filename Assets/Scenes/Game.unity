@@ -155,6 +155,10 @@ MonoBehaviour:
     type: 3}
   galaxyLoadingBar: {fileID: 258497151}
   playerCamera: {fileID: 735034770}
+  nodeUIPrefab: {fileID: 4020746814728133829, guid: e0da396c0eb8fd944958e74ce4c17328,
+    type: 3}
+  nodeResourceInfoUI: {fileID: 8021522571838656454, guid: 03f75b2b4eddbf94099a9248159e7b4e,
+    type: 3}
   systemDensity: 0.25
   systemRadius: 150
   ringIntervalMultiplier: 25
@@ -199,10 +203,6 @@ MonoBehaviour:
   systemFactions: 1
   numberOfFactions: 20
   factions: []
-  nodeUIPrefab: {fileID: 4020746814728133829, guid: e0da396c0eb8fd944958e74ce4c17328,
-    type: 3}
-  nodeResourceInfoUI: {fileID: 8021522571838656454, guid: 03f75b2b4eddbf94099a9248159e7b4e,
-    type: 3}
   debugMode: 1
   coroutineGenerateYieldIntervals: 100
   coroutineCollisionYieldIntervals: 40

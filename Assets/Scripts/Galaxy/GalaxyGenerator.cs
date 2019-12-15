@@ -217,7 +217,7 @@ public class GalaxyGenerator : MonoBehaviour
         connectLoading = 0.0f;
         totalLoading = 0.0f;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         //Calculate number of rings
         int numberOfRings = 0;
@@ -300,6 +300,8 @@ public class GalaxyGenerator : MonoBehaviour
             }
         }
         connectLoading = 1.0f;
+
+        factions = Factions.LoadFactions(SaveData.current.factions);
     }
 
     //Coroutine to spawn the galaxy, coroutine needed otherwise performance is awful.
@@ -486,7 +488,6 @@ public class GalaxyGenerator : MonoBehaviour
                 }
             }
             connectLoading = 1.0f;
-            print(SaveData.current.galaxyNodes[0].nodeID);
 
             //If factions are enabled.
             if (systemFactions == true)
