@@ -253,7 +253,6 @@ public class GalaxyGenerator : MonoBehaviour
         positionLoading = 1.0f;
         collisionLoading = 1.0f;
 
-
         //Array creation
         GameObject[] nodeObjects = GetAllGalaxySystems();
 
@@ -291,6 +290,7 @@ public class GalaxyGenerator : MonoBehaviour
                     //Loading calculation
                     connectLoading = Mathf.Clamp01((float)i / (float)nodeObjects.Length);
                 }
+                node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
 
                 //coroutine yield check
                 if (i % coroutineResourceYieldIntervals == 0)

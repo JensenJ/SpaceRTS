@@ -18,7 +18,6 @@ public class FactionDataSerializationSurrogate : ISerializationSurrogate
         info.AddValue("homeSystem", data.homeSystem.nodeID);
         info.AddValue("explored", data.exploredSystemIDs);
         info.AddValue("controlled", data.ownedSystemIDs);
-        info.AddValue("resources", data.resourceData);
     }
 
     public object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
@@ -34,7 +33,6 @@ public class FactionDataSerializationSurrogate : ISerializationSurrogate
         data.homeSystemID = (int)info.GetValue("homeSystem", typeof(int));
         data.exploredSystemIDs = (List<int>)info.GetValue("explored", typeof(List<int>));
         data.ownedSystemIDs = (List<int>)info.GetValue("controlled", typeof(List<int>));
-        data.resourceData = (FactionResourceData[])info.GetValue("resources", typeof(FactionResourceData[]));
 
         obj = data;
         return obj;

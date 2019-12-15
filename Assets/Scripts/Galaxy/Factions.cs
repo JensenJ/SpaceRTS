@@ -59,20 +59,8 @@ public static class Factions
                 factions[i].ownedSystemIDs.Add(homeSystem.nodeID);
 
                 //Resource assigning
-                factions[i].resourceData = new FactionResourceData[3];
+                factions[i].resourceData = ResetFactionResourceData(factions[i].factionID);
 
-                //Energy allocation
-                factions[i].resourceData[0].resourceType = ResourceData.ResourceType.Energy;
-                factions[i].resourceData[0].resourceStored = 1000;
-                factions[i].resourceData[0].resourceInflux = 10;
-                //Fuel allocation
-                factions[i].resourceData[1].resourceType = ResourceData.ResourceType.Fuel;
-                factions[i].resourceData[1].resourceStored = 1000;
-                factions[i].resourceData[1].resourceInflux = 10;
-                //Minerals allocation
-                factions[i].resourceData[2].resourceType = ResourceData.ResourceType.Minerals;
-                factions[i].resourceData[2].resourceStored = 1000;
-                factions[i].resourceData[2].resourceInflux = 10;
                 //Update resources
                 UpdateResourceInflux(i, homeSystem);
             }
@@ -82,6 +70,28 @@ public static class Factions
             }
         }
         return factions;
+    }
+
+    //Function to reset faction resources to default
+    public static FactionResourceData[] ResetFactionResourceData(int factionID)
+    {
+        //Resource assigning
+        factions[factionID].resourceData = new FactionResourceData[3];
+
+        //Energy allocation
+        factions[factionID].resourceData[0].resourceType = ResourceData.ResourceType.Energy;
+        factions[factionID].resourceData[0].resourceStored = 1000;
+        factions[factionID].resourceData[0].resourceInflux = 10;
+        //Fuel allocation
+        factions[factionID].resourceData[1].resourceType = ResourceData.ResourceType.Fuel;
+        factions[factionID].resourceData[1].resourceStored = 1000;
+        factions[factionID].resourceData[1].resourceInflux = 10;
+        //Minerals allocation
+        factions[factionID].resourceData[2].resourceType = ResourceData.ResourceType.Minerals;
+        factions[factionID].resourceData[2].resourceStored = 1000;
+        factions[factionID].resourceData[2].resourceInflux = 10;
+
+        return factions[factionID].resourceData;
     }
 
     //Function to load faction data
@@ -98,6 +108,8 @@ public static class Factions
             factions[i].ownedSystems = new List<GalaxyNode>();
             factions[i].ownedSystemIDs = new List<int>();
             factions[i].exploredSystemIDs = new List<int>();
+            factions[i].resourceData = ResetFactionResourceData(factions[i].factionID);
+            
 
             //Get all explored systems
             for (int j = 0; j < factionData[i].exploredSystemIDs.Count; j++)
