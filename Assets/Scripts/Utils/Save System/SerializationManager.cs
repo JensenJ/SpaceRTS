@@ -68,11 +68,13 @@ public class SerializationManager : MonoBehaviour
         Vector3SerializationSurrogate vector3Surrogate = new Vector3SerializationSurrogate();
         QuaternionSerializationSurrogate quaternionSurrogate = new QuaternionSerializationSurrogate();
         GalaxyNodeSerializationSurrogate nodeSurrogate = new GalaxyNodeSerializationSurrogate();
+        FactionDataSerializationSurrogate factionSurrogate = new FactionDataSerializationSurrogate();
 
         //Add surrogates
         selector.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), vector3Surrogate);
         selector.AddSurrogate(typeof(Quaternion), new StreamingContext(StreamingContextStates.All), quaternionSurrogate);
         selector.AddSurrogate(typeof(GalaxyNode), new StreamingContext(StreamingContextStates.All), nodeSurrogate);
+        selector.AddSurrogate(typeof(FactionData), new StreamingContext(StreamingContextStates.All), factionSurrogate);
 
         //Apply surrogates
         formatter.SurrogateSelector = selector;

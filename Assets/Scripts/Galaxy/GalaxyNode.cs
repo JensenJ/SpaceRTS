@@ -59,9 +59,10 @@ public class GalaxyNode : MonoBehaviour
         UpdateNodeUI();
     }
 
-    public void UpdateGalaxyNodeData(int ring, List<SystemFeatures> newFeatures)
+    public void UpdateGalaxyNodeData(int ring, int newNodeID, List<SystemFeatures> newFeatures)
     {
         position = transform.position;
+        nodeID = newNodeID;
         currentRing = ring;
         features = newFeatures;
     }

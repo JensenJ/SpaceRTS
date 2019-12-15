@@ -42,16 +42,21 @@ public static class Factions
                 factions[i].homeSystem = homeSystem;
                 homeSystem.AddSystemFeature(GalaxyNode.SystemFeatures.Planet);
                 homeSystem.SetOwningFaction(i);
+                factions[i].homeSystemID = homeSystem.nodeID;
                 homeSystems[i] = homeSystem.gameObject;
                 factions[i].hasCapitulated = false;
 
                 //Assigning Galaxy node arrays
                 factions[i].exploredSystems = new List<GalaxyNode>();
                 factions[i].ownedSystems = new List<GalaxyNode>();
+                factions[i].exploredSystemIDs = new List<int>();
+                factions[i].ownedSystemIDs = new List<int>();
 
                 //Add homesystem to explored and owned systems
                 factions[i].exploredSystems.Add(homeSystem);
                 factions[i].ownedSystems.Add(homeSystem);
+                factions[i].exploredSystemIDs.Add(homeSystem.nodeID);
+                factions[i].ownedSystemIDs.Add(homeSystem.nodeID);
 
                 //Resource assigning
                 factions[i].resourceData = new FactionResourceData[3];
@@ -77,6 +82,23 @@ public static class Factions
             }
         }
         return factions;
+    }
+
+    public static FactionData[] LoadFactions(FactionData[] factionData)
+    {
+        //Clears current faction data
+        ClearFactions(factionData.Length);
+        for (int i = 0; i < factionData.Length; i++)
+        {
+            factions[i] = factionData[i];
+            factions[i].homeSystem = GalaxyGenerator.GetGalaxyNodeFromID(factionData[i].homeSystemID, GalaxyGenerator.GetAllGalaxySystems());
+        }
+        return factions;
+    }
+
+    public static void ClearFactions(int newLength)
+    {
+        factions = new FactionData[newLength];
     }
 
     //Sets the faction name
@@ -115,6 +137,7 @@ public static class Factions
             if(alreadyInList == false)
             {
                 factions[factionID].exploredSystems.Add(newExploredSystem);
+                factions[factionID].exploredSystemIDs.Add(newExploredSystem.nodeID);
             }
         }
     }
@@ -140,8 +163,9 @@ public static class Factions
             {
                 //Add to explored systems, incase it wasnt added before
                 AddExploredSystem(factionID, newControlledSystem);
-                //Adding to controlled
+                //Adding to controlled lists
                 factions[factionID].ownedSystems.Add(newControlledSystem);
+                factions[factionID].ownedSystemIDs.Add(newControlledSystem.nodeID);
                 newControlledSystem.SetOwningFaction(factionID);
                 UpdateResourceInflux(factionID, newControlledSystem);
 
@@ -232,8 +256,11 @@ public struct FactionData
     public string factionName;
     public bool hasCapitulated;
     public Color factionColour;
+    public int homeSystemID;
     public GalaxyNode homeSystem;
     public List<GalaxyNode> exploredSystems;
+    public List<int> exploredSystemIDs;
+    public List<int> ownedSystemIDs;
     public List<GalaxyNode> ownedSystems;
     public FactionResourceData[] resourceData;
 }

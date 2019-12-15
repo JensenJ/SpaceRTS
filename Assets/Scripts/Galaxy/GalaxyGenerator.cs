@@ -183,25 +183,28 @@ public class GalaxyGenerator : MonoBehaviour
     //Public function to load a galaxy
     public void LoadGalaxy(List<GalaxyNode> nodes)
     {
-        ClearGalaxyMap();
-        if (currentGenerateCoroutine != null)
+        if (ClearGalaxyMap())
         {
-            StopCoroutine(currentGenerateCoroutine);
-        }
+            if (currentGenerateCoroutine != null)
+            {
+                StopCoroutine(currentGenerateCoroutine);
+            }
 
-        currentGenerateCoroutine = LoadGalaxyCoroutine(nodes);
-        StartCoroutine(currentGenerateCoroutine);
+            currentGenerateCoroutine = LoadGalaxyCoroutine(nodes);
+            StartCoroutine(currentGenerateCoroutine);
+        }
 
     }
 
     //function to clear the galaxy map by destroying the rings
-    public void ClearGalaxyMap()
+    public bool ClearGalaxyMap()
     {
         //For every galaxy ring, destroy it
         for (int i = 0; i < transform.childCount; i++)
         {
             Destroy(transform.GetChild(i).gameObject);
         }
+        return true;
     }
 
     //Coroutine to load the galaxy map
@@ -213,6 +216,8 @@ public class GalaxyGenerator : MonoBehaviour
         resourceLoading = 0.0f;
         connectLoading = 0.0f;
         totalLoading = 0.0f;
+
+        yield return new WaitForSeconds(0.5f);
 
         //Calculate number of rings
         int numberOfRings = 0;
@@ -231,11 +236,12 @@ public class GalaxyGenerator : MonoBehaviour
         for (int i = 0; i < nodeData.Count; i++)
         {
             //Instantiate to a position
+            int currentIteration = i;
             GameObject node = Instantiate(systemPrefab, nodeData[i].position, Quaternion.identity, transform.GetChild(nodeData[i].currentRing - 1));
-            node.name = "Node " + (i - 1);
+            node.name = "Node " + currentIteration;
 
             GalaxyNode galaxyNode = node.GetComponent<GalaxyNode>();
-            galaxyNode.UpdateGalaxyNodeData(nodeData[i].currentRing, nodeData[i].features);
+            galaxyNode.UpdateGalaxyNodeData(nodeData[i].currentRing, nodeData[i].nodeID, nodeData[i].features);
 
             if (i % coroutineGenerateYieldIntervals == 0)
             {
@@ -286,9 +292,6 @@ public class GalaxyGenerator : MonoBehaviour
                     connectLoading = Mathf.Clamp01((float)i / (float)nodeObjects.Length);
                 }
 
-                //Node setup
-                node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                node.UpdateGalaxyNodeData(node.currentRing, node.features);
                 //coroutine yield check
                 if (i % coroutineResourceYieldIntervals == 0)
                 {
@@ -439,12 +442,6 @@ public class GalaxyGenerator : MonoBehaviour
             }
             resourceLoading = 1.0f;
 
-            //Assign systems a node id
-            for (int i = 0; i < systems.Length; i++)
-            {
-                systems[i].GetComponent<GalaxyNode>().nodeID = i;
-            }
-
             //For every system
             SaveData.current.galaxyNodes = new List<GalaxyNode>();
             for (int i = 0; i < systems.Length; i++)
@@ -477,8 +474,9 @@ public class GalaxyGenerator : MonoBehaviour
 
                     //Node setup
                     node.name = "Node " + i;
+                    node.nodeID = i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                    node.UpdateGalaxyNodeData(node.currentRing, node.features);
+                    node.UpdateGalaxyNodeData(node.currentRing, node.nodeID, node.features);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
                     {
@@ -488,12 +486,14 @@ public class GalaxyGenerator : MonoBehaviour
                 }
             }
             connectLoading = 1.0f;
+            print(SaveData.current.galaxyNodes[0].nodeID);
 
             //If factions are enabled.
             if (systemFactions == true)
             {
                 //Create faction starting systems.
                 factions = Factions.CreateFactions(numberOfFactions, systems);
+                SaveData.current.factions = factions;
                 float x = factions[0].homeSystem.transform.position.x;
                 float y = factions[0].homeSystem.transform.position.y;
 
@@ -574,9 +574,22 @@ public class GalaxyGenerator : MonoBehaviour
     }
 
     //Return an array of gameobjects that are all tagged with "GalaxySystem"
-    GameObject[] GetAllGalaxySystems()
+    public static GameObject[] GetAllGalaxySystems()
     {
         return GameObject.FindGameObjectsWithTag("GalaxySystem");
+    }
+
+    public static GalaxyNode GetGalaxyNodeFromID(int nodeID, GameObject[] nodesToSearch)
+    {
+        for (int i = 0; i < nodesToSearch.Length; i++)
+        {
+            GalaxyNode node = nodesToSearch[i].GetComponent<GalaxyNode>();
+            if(nodeID == node.nodeID)
+            {
+                return node;
+            }
+        }
+        return null;
     }
 
     void RunDebugging(int currentGeneration)

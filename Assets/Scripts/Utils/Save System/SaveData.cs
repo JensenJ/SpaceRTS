@@ -33,6 +33,5 @@ public class SaveData
     public Vector3 cameraPosition;
     public float cameraOrthographicSize;
     public List<GalaxyNode> galaxyNodes;
-
-    
+    public FactionData[] factions;
 }
