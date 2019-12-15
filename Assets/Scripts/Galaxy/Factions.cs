@@ -52,14 +52,12 @@ public static class Factions
                 factions[i].exploredSystemIDs = new List<int>();
                 factions[i].ownedSystemIDs = new List<int>();
 
-                //Add homesystem to explored and owned systems
-                factions[i].exploredSystems.Add(homeSystem);
-                factions[i].ownedSystems.Add(homeSystem);
-                factions[i].exploredSystemIDs.Add(homeSystem.nodeID);
-                factions[i].ownedSystemIDs.Add(homeSystem.nodeID);
-
                 //Resource assigning
                 factions[i].resourceData = ResetFactionResourceData(factions[i].factionID);
+
+                //Add homesystem to explored and owned systems
+                AddExploredSystem(factions[i].factionID, factions[i].homeSystem);
+                AddControlledSystem(factions[i].factionID, factions[i].homeSystem);
 
                 //Update resources
                 UpdateResourceInflux(i, homeSystem);
