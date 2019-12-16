@@ -32,6 +32,10 @@ public class GalaxyNode : MonoBehaviour
     [SerializeField]
     public List<SystemFeatures> features = new List<SystemFeatures>();
 
+    //Allows multiple ships within a single system
+    [SerializeField]
+    public List<ShipData> ships = new List<ShipData>();
+
     //Resource list
     [SerializeField]
     public List<GalaxyNodeResourceData> resources = new List<GalaxyNodeResourceData>();
@@ -59,12 +63,13 @@ public class GalaxyNode : MonoBehaviour
         UpdateNodeUI();
     }
 
-    public void UpdateGalaxyNodeData(int ring, int newNodeID, List<SystemFeatures> newFeatures)
+    public void UpdateGalaxyNodeData(int ring, int newNodeID, List<SystemFeatures> newFeatures, List<ShipData> newShips)
     {
         position = transform.position;
         nodeID = newNodeID;
         currentRing = ring;
         features = newFeatures;
+        ships = newShips;
     }
 
     //Info panel functions
@@ -98,6 +103,17 @@ public class GalaxyNode : MonoBehaviour
     public void AddSystemFeature(SystemFeatures m_feature)
     {
         features.Add(m_feature);
+    }
+
+    //Functions for managing ships in the current system
+    public void AddShip(ShipData newShip)
+    {
+        ships.Add(newShip);
+    }
+
+    public void RemoveShip(ShipData shipToRemove)
+    {
+        ships.Remove(shipToRemove);
     }
 
     //Adding actual nodes to list

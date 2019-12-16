@@ -35,7 +35,7 @@ public static class Ships
     }
 
     //Creates a new ship and adds it to the array
-    public static void CreateNewShip(GalaxyNode spawnSystem, ShipType type)
+    public static ShipData CreateNewShip(GalaxyNode spawnSystem, ShipType type)
     {
         int owningID = spawnSystem.GetOwningFactionID();
         ShipData ship = new ShipData
@@ -49,6 +49,7 @@ public static class Ships
             shipSpeed = 100,
         };
         ships.Add(ship);
+        return ship;
     }
 
     //Function to change the owner of a ship, could be used to capture ships later on.

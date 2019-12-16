@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour
                     Factions.RemoveControlledSystem(currentlySelectedNode.GetOwningFactionID(), currentlySelectedNode);
                     Factions.AddControlledSystem(playerFactionID, currentlySelectedNode);
                     Factions.CheckForCapitulation();
+                    currentlySelectedNode.AddShip(Ships.CreateNewShip(currentlySelectedNode, Ships.ShipType.Exploration));
                     currentlySelectedNode.EnableInfoPanel();
                 }
             }

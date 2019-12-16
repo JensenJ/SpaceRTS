@@ -241,7 +241,7 @@ public class GalaxyGenerator : MonoBehaviour
             node.name = "Node " + currentIteration;
 
             GalaxyNode galaxyNode = node.GetComponent<GalaxyNode>();
-            galaxyNode.UpdateGalaxyNodeData(nodeData[i].currentRing, nodeData[i].nodeID, nodeData[i].features);
+            galaxyNode.UpdateGalaxyNodeData(nodeData[i].currentRing, nodeData[i].nodeID, nodeData[i].features, nodeData[i].ships);
 
             if (i % coroutineGenerateYieldIntervals == 0)
             {
@@ -478,7 +478,7 @@ public class GalaxyGenerator : MonoBehaviour
                     node.name = "Node " + i;
                     node.nodeID = i;
                     node.CreateNodeUI(nodeUIPrefab, nodeResourceInfoUI);
-                    node.UpdateGalaxyNodeData(node.currentRing, node.nodeID, node.features);
+                    node.UpdateGalaxyNodeData(node.currentRing, node.nodeID, node.features, node.ships);
                     //coroutine yield check
                     if(i % coroutineResourceYieldIntervals == 0)
                     {
