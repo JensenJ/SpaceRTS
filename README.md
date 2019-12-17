@@ -1,2 +1,2 @@
 # DimensionJumper
- A small game where the player has to travel across dimensions.
+A potentially multplayer space strategy game 
