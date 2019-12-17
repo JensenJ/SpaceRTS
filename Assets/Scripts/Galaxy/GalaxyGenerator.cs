@@ -19,6 +19,8 @@ public class GalaxyGenerator : MonoBehaviour
     GameObject nodeUIPrefab = null;
     [SerializeField]
     GameObject nodeResourceInfoUI = null;
+    [SerializeField]
+    PlayerController playerController = null;
 
     //Inspector settings for galaxy generation
     [Header("System Position Generation Settings: ")]
@@ -173,10 +175,12 @@ public class GalaxyGenerator : MonoBehaviour
         if (totalLoading >= 1)
         {
             galaxyLoadingBar.DisableBar();
+            playerController.SetInteractStatus(true);
         }
         else if(galaxyLoadingBar.IsBarEnabled() == false)
         {
             galaxyLoadingBar.EnableBar();
+            playerController.SetInteractStatus(false);
         }
     }
 

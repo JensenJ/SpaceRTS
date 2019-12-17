@@ -159,6 +159,7 @@ MonoBehaviour:
     type: 3}
   nodeResourceInfoUI: {fileID: 8021522571838656454, guid: 03f75b2b4eddbf94099a9248159e7b4e,
     type: 3}
+  playerController: {fileID: 735034773}
   systemDensity: 0.25
   systemRadius: 150
   ringIntervalMultiplier: 25
@@ -534,6 +535,7 @@ MonoBehaviour:
   playerFactionID: 0
   currentlySelectedNode: {fileID: 0}
   previouslySelectedNode: {fileID: 0}
+  canInteract: 0
 --- !u!1 &1082351809
 GameObject:
   m_ObjectHideFlags: 0
